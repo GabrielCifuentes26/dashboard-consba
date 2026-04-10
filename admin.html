@@ -762,7 +762,7 @@
 
     // ── LOAD USERS ──────────────────────────────────────────────────────────
     async function loadUsers() {
-        const { data, error } = await client
+        const { data, error } = await SERVICE_CLIENT
             .from('usuarios').select('*').order('creado_en', { ascending: false });
 
         if (error) { showToast('Error al cargar usuarios', 'error'); return; }
