@@ -23,6 +23,7 @@
             --orange-dk: #ea6c0a;
             --green:     #10b981;
             --red:       #ef4444;
+            --amber:     #f59e0b;
         }
 
         body {
@@ -40,8 +41,6 @@
             display: flex; flex-direction: column;
             justify-content: center; padding: 60px;
         }
-
-        /* Círculos decorativos animados */
         .circle {
             position: absolute; border-radius: 50%;
             background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%);
@@ -50,57 +49,34 @@
         .circle-1 { width: 500px; height: 500px; top: -150px; right: -100px; animation-delay: 0s; }
         .circle-2 { width: 350px; height: 350px; bottom: -80px; left: -60px; animation-delay: -3s; animation-direction: reverse; background: radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%); }
         .circle-3 { width: 200px; height: 200px; top: 40%; left: 30%; animation-delay: -5s; background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%); }
-
         @keyframes floatCircle {
             0%,100% { transform: translate(0,0) scale(1); }
             33%      { transform: translate(20px,-30px) scale(1.05); }
             66%      { transform: translate(-15px,20px) scale(0.97); }
         }
-
         .panel-content { position: relative; z-index: 1; }
-
-        .panel-logo {
-            font-size: 1.4rem; font-weight: 900; color: #fff;
-            letter-spacing: 3px; text-transform: uppercase;
-            margin-bottom: 60px;
-        }
+        .panel-logo { font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 60px; }
         .panel-logo span { color: var(--blue); }
-
-        .panel-heading {
-            font-size: 3rem; font-weight: 900; color: #fff;
-            line-height: 1.1; margin-bottom: 20px; letter-spacing: -1.5px;
-        }
+        .panel-heading { font-size: 3rem; font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 20px; letter-spacing: -1.5px; }
         .panel-heading em { color: var(--blue); font-style: normal; }
-        .panel-sub {
-            font-size: 0.95rem; color: rgba(255,255,255,0.5);
-            line-height: 1.75; max-width: 380px; margin-bottom: 50px;
-        }
+        .panel-sub { font-size: 0.95rem; color: rgba(255,255,255,0.5); line-height: 1.75; max-width: 380px; margin-bottom: 50px; }
         .panel-stats { display: flex; gap: 40px; }
         .p-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; }
         .p-stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
 
-        /* Mini dashboard card */
         .mini-card {
             position: absolute; bottom: 40px; right: 40px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
             border-radius: 16px; padding: 20px; width: 250px;
             backdrop-filter: blur(12px); z-index: 1;
             animation: slideInRight .8s ease .4s both;
         }
         @keyframes slideInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
-
         .mc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-        .mc-avatar {
-            width: 34px; height: 34px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.9rem;
-        }
+        .mc-avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--blue), var(--blue-dark)); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
         .mc-title { font-size: 0.78rem; font-weight: 700; color: #fff; }
         .mc-sub   { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
-
-        .mc-bars { display: flex; flex-direction: column; gap: 9px; }
+        .mc-bars  { display: flex; flex-direction: column; gap: 9px; }
         .mc-bar-row { display: flex; align-items: center; gap: 8px; }
         .mc-bar-label { font-size: 0.63rem; color: rgba(255,255,255,0.5); width: 56px; flex-shrink: 0; }
         .mc-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
@@ -110,10 +86,10 @@
 
         /* ── RIGHT PANEL ── */
         .right-panel {
-            width: 460px; flex-shrink: 0;
+            width: 480px; flex-shrink: 0;
             background: var(--surface);
             display: flex; flex-direction: column;
-            justify-content: center; padding: 56px 48px;
+            justify-content: center; padding: 50px 48px;
             position: relative; overflow: hidden;
         }
         .right-panel::before {
@@ -121,9 +97,27 @@
             position: absolute; top: -100px; right: -100px;
             width: 300px; height: 300px; border-radius: 50%;
             background: radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .form-header { margin-bottom: 36px; position: relative; z-index: 1; }
+        /* ── FORM CONTAINER (animado) ── */
+        .form-container {
+            position: relative; z-index: 1;
+        }
+        .form-view {
+            transition: opacity .3s ease, transform .3s ease;
+        }
+        .form-view.hidden {
+            opacity: 0; transform: translateX(20px);
+            position: absolute; top: 0; left: 0; right: 0;
+            pointer-events: none;
+        }
+        .form-view.visible {
+            opacity: 1; transform: translateX(0);
+        }
+
+        /* ── FORM HEADER ── */
+        .form-header { margin-bottom: 28px; }
         .form-tag {
             display: inline-flex; align-items: center; gap: 6px;
             background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2);
@@ -133,127 +127,109 @@
         }
         .form-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
-
-        .form-title {
-            font-size: 2rem; font-weight: 900; color: var(--navy);
-            margin-bottom: 6px; letter-spacing: -0.8px;
-        }
+        .form-title { font-size: 1.9rem; font-weight: 900; color: var(--navy); margin-bottom: 6px; letter-spacing: -0.8px; }
         .form-subtitle { font-size: 0.85rem; color: var(--gray); }
 
-        .login-form { display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
-
+        /* ── FIELDS ── */
+        .form-body { display: flex; flex-direction: column; gap: 14px; }
         .field { display: flex; flex-direction: column; gap: 6px; }
-        .field label {
-            font-size: 0.72rem; font-weight: 700; color: var(--navy2);
-            text-transform: uppercase; letter-spacing: 0.7px;
-        }
+        .field label { font-size: 0.72rem; font-weight: 700; color: var(--navy2); text-transform: uppercase; letter-spacing: 0.7px; }
         .field-wrap { position: relative; }
-        .field-icon {
-            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-            font-size: 0.9rem; color: var(--gray2); pointer-events: none;
-            transition: color .2s;
-        }
-        .field input {
-            width: 100%;
-            background: var(--bg);
-            border: 2px solid var(--border);
+        .field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: var(--gray2); pointer-events: none; transition: color .2s; }
+        .field input, .field select {
+            width: 100%; background: var(--bg); border: 2px solid var(--border);
             border-radius: 10px; color: var(--navy);
             padding: 13px 14px 13px 42px;
-            font-size: 0.9rem; font-family: inherit; outline: none;
-            transition: border-color .2s, background .2s, box-shadow .2s;
+            font-size: 0.88rem; font-family: inherit; outline: none;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .field input:focus {
+        .field select { padding-left: 42px; cursor: pointer; }
+        .field input:focus, .field select:focus {
             border-color: var(--blue);
-            background: var(--surface);
             box-shadow: 0 0 0 4px rgba(14,165,233,0.1);
         }
-        .field input:focus + .field-icon,
         .field-wrap:focus-within .field-icon { color: var(--blue); }
         .field input::placeholder { color: var(--gray2); }
-
-        .field-hint {
-            text-align: right; font-size: 0.72rem;
-            color: var(--blue); cursor: pointer; text-decoration: none;
-            font-weight: 600; transition: color .2s;
-        }
+        .field-hint { text-align: right; font-size: 0.72rem; color: var(--blue); cursor: pointer; text-decoration: none; font-weight: 600; transition: color .2s; }
         .field-hint:hover { color: var(--blue-dark); }
 
-        .error-msg {
-            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
-            border-radius: 10px; padding: 11px 16px;
-            font-size: 0.8rem; color: var(--red);
-            display: none; align-items: center; gap: 8px;
+        /* Empresa selector visual */
+        .empresa-select { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .empresa-opt {
+            border: 2px solid var(--border); border-radius: 10px;
+            padding: 14px; text-align: center; cursor: pointer;
+            transition: all .2s; background: var(--bg);
         }
-        .error-msg.show { display: flex; animation: shake .4s ease; }
-        @keyframes shake {
-            0%,100% { transform:translateX(0); }
-            20%      { transform:translateX(-6px); }
-            40%      { transform:translateX(6px); }
-            60%      { transform:translateX(-4px); }
-            80%      { transform:translateX(4px); }
-        }
+        .empresa-opt:hover { border-color: var(--blue); background: rgba(14,165,233,0.04); }
+        .empresa-opt.selected { border-color: var(--blue); background: rgba(14,165,233,0.08); }
+        .empresa-opt.selected .emp-name { color: var(--blue-dark); }
+        .emp-icon { font-size: 1.4rem; margin-bottom: 5px; }
+        .emp-name { font-size: 0.82rem; font-weight: 800; color: var(--navy); }
+        .emp-desc { font-size: 0.65rem; color: var(--gray2); margin-top: 2px; }
 
-        .success-msg {
-            background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);
-            border-radius: 10px; padding: 11px 16px;
-            font-size: 0.8rem; color: var(--green);
-            display: none; align-items: center; gap: 8px;
+        /* ── MESSAGES ── */
+        .alert {
+            border-radius: 10px; padding: 12px 16px;
+            font-size: 0.8rem; display: none; align-items: center; gap: 10px;
+            line-height: 1.5;
         }
-        .success-msg.show { display: flex; }
+        .alert.show { display: flex; }
+        .alert.error   { background: rgba(239,68,68,0.06);  border: 1px solid rgba(239,68,68,0.2);  color: var(--red); animation: shake .4s ease; }
+        .alert.success { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
+        .alert.warning { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); color: var(--amber); }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
-        .btn-login {
+        /* ── BUTTONS ── */
+        .btn-main {
             background: linear-gradient(135deg, var(--orange), var(--orange-dk));
-            color: #fff; border: none; padding: 14px;
-            border-radius: 10px; font-size: 0.92rem; font-weight: 800;
-            cursor: pointer; font-family: inherit;
+            color: #fff; border: none; padding: 14px; border-radius: 10px;
+            font-size: 0.92rem; font-weight: 800; cursor: pointer; font-family: inherit;
             transition: opacity .2s, transform .15s, box-shadow .2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: 4px;
             box-shadow: 0 4px 16px rgba(249,115,22,0.35);
         }
-        .btn-login:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
-        .btn-login:active { transform: translateY(0); }
-        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-main:hover  { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
+        .btn-main:active { transform: translateY(0); }
+        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .spinner {
-            width: 16px; height: 16px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: #fff; border-radius: 50%;
-            animation: spin .6s linear infinite; display: none;
-        }
+        .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .divider { display: flex; align-items: center; gap: 14px; }
+        /* ── TOGGLE LINK ── */
+        .divider { display: flex; align-items: center; gap: 14px; margin: 6px 0; }
         .divider-line { flex: 1; height: 1px; background: var(--border); }
         .divider-text { font-size: 0.72rem; color: var(--gray2); }
 
-        .back-link {
-            text-align: center; font-size: 0.8rem; color: var(--gray); margin-top: 4px;
-        }
-        .back-link a { color: var(--blue); text-decoration: none; font-weight: 700; }
-        .back-link a:hover { color: var(--blue-dark); }
+        .toggle-link { text-align: center; font-size: 0.82rem; color: var(--gray); margin-top: 4px; }
+        .toggle-link a { color: var(--blue); text-decoration: none; font-weight: 700; cursor: pointer; }
+        .toggle-link a:hover { color: var(--blue-dark); }
 
-        /* Animación entrada del panel derecho */
-        .right-panel > * { animation: fadeInUp .5s ease both; }
-        .form-header       { animation-delay: .1s; }
-        .login-form        { animation-delay: .2s; }
+        /* ── SUCCESS STATE (registro enviado) ── */
+        .success-state {
+            text-align: center; padding: 20px 0;
+            display: none; flex-direction: column; align-items: center; gap: 16px;
+        }
+        .success-state.show { display: flex; animation: fadeInUp .5s ease; }
+        .success-icon { width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.1); border: 2px solid rgba(16,185,129,0.3); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .success-title { font-size: 1.4rem; font-weight: 900; color: var(--navy); }
+        .success-msg { font-size: 0.88rem; color: var(--gray); line-height: 1.7; max-width: 320px; }
+        .success-sub { font-size: 0.78rem; color: var(--gray2); }
 
         @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
         @media (max-width: 768px) {
             .left-panel { display: none; }
-            .right-panel { width: 100%; padding: 40px 28px; }
+            .right-panel { width: 100%; padding: 40px 24px; }
         }
     </style>
 </head>
 <body>
 
-<!-- Left decorative panel -->
+<!-- Left panel decorativo -->
 <div class="left-panel">
     <div class="circle circle-1"></div>
     <div class="circle circle-2"></div>
     <div class="circle circle-3"></div>
-
     <div class="panel-content">
         <div class="panel-logo">Costos&<span>Presupuestos</span></div>
         <div class="panel-heading">Control<br><em>inteligente</em><br>de obra</div>
@@ -263,90 +239,124 @@
             <div><div class="p-stat-num">91.98%</div><div class="p-stat-lbl">Avance general</div></div>
         </div>
     </div>
-
     <div class="mini-card">
         <div class="mc-header">
             <div class="mc-avatar">📊</div>
-            <div>
-                <div class="mc-title">RV4 — Control Presupuestario</div>
-                <div class="mc-sub">Avance de ejecución</div>
-            </div>
+            <div><div class="mc-title">RV4 — Control Presupuestario</div><div class="mc-sub">Avance de ejecución</div></div>
         </div>
         <div class="mc-bars">
-            <div class="mc-bar-row">
-                <div class="mc-bar-label">Construcción</div>
-                <div class="mc-bar-track"><div class="mc-bar-fill" style="width:93%;background:#0ea5e9"></div></div>
-                <div class="mc-pct">93%</div>
-            </div>
-            <div class="mc-bar-row">
-                <div class="mc-bar-label">Urbanización</div>
-                <div class="mc-bar-track"><div class="mc-bar-fill" style="width:91%;background:#f97316"></div></div>
-                <div class="mc-pct">91%</div>
-            </div>
-            <div class="mc-bar-row">
-                <div class="mc-bar-label">I.7a</div>
-                <div class="mc-bar-track"><div class="mc-bar-fill" style="width:84%;background:#10b981"></div></div>
-                <div class="mc-pct">84%</div>
-            </div>
-            <div class="mc-bar-row">
-                <div class="mc-bar-label">Megaproyecto</div>
-                <div class="mc-bar-track"><div class="mc-bar-fill" style="width:60%;background:#f59e0b"></div></div>
-                <div class="mc-pct">60%</div>
-            </div>
+            <div class="mc-bar-row"><div class="mc-bar-label">Construcción</div><div class="mc-bar-track"><div class="mc-bar-fill" style="width:93%;background:#0ea5e9"></div></div><div class="mc-pct">93%</div></div>
+            <div class="mc-bar-row"><div class="mc-bar-label">Urbanización</div><div class="mc-bar-track"><div class="mc-bar-fill" style="width:91%;background:#f97316"></div></div><div class="mc-pct">91%</div></div>
+            <div class="mc-bar-row"><div class="mc-bar-label">I.7a</div><div class="mc-bar-track"><div class="mc-bar-fill" style="width:84%;background:#10b981"></div></div><div class="mc-pct">84%</div></div>
+            <div class="mc-bar-row"><div class="mc-bar-label">Megaproyecto</div><div class="mc-bar-track"><div class="mc-bar-fill" style="width:60%;background:#f59e0b"></div></div><div class="mc-pct">60%</div></div>
         </div>
     </div>
 </div>
 
-<!-- Right: Login form -->
+<!-- Right panel -->
 <div class="right-panel">
-    <div class="form-header">
-        <div class="form-tag"><div class="form-tag-dot"></div>Acceso al sistema</div>
-        <div class="form-title">Bienvenido</div>
-        <div class="form-subtitle">Ingresa tus credenciales para continuar</div>
+    <div class="form-container">
+
+        <!-- ── VISTA: LOGIN ── -->
+        <div class="form-view visible" id="viewLogin">
+            <div class="form-header">
+                <div class="form-tag"><div class="form-tag-dot"></div>Acceso al sistema</div>
+                <div class="form-title">Bienvenido</div>
+                <div class="form-subtitle">Ingresa tus credenciales para continuar</div>
+            </div>
+            <div class="form-body">
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <div class="field-wrap">
+                        <input type="email" id="loginEmail" placeholder="correo@ejemplo.com" required>
+                        <span class="field-icon">✉</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <div class="field-wrap">
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <span class="field-icon">🔒</span>
+                    </div>
+                    <a href="#" class="field-hint">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div class="alert error" id="loginError"><span>⚠</span><span id="loginErrorText"></span></div>
+                <div class="alert warning" id="loginPending"><span>⏳</span><span>Tu cuenta está <strong>pendiente de aprobación</strong>. El administrador revisará tu solicitud y recibirás acceso pronto.</span></div>
+                <div class="alert error" id="loginRejected"><span>✕</span><span>Tu solicitud fue <strong>rechazada</strong>. Contacta al administrador en gcifuentes@rvcuatro.com</span></div>
+                <div class="alert success" id="loginSuccess"><span>✓</span><span>Acceso correcto. Redirigiendo...</span></div>
+                <button class="btn-main" id="btnLogin" onclick="doLogin()">
+                    <div class="spinner" id="loginSpinner"></div>
+                    <span id="loginBtnText">Iniciar sesión</span>
+                </button>
+                <div class="divider"><div class="divider-line"></div><span class="divider-text">o</span><div class="divider-line"></div></div>
+                <div class="toggle-link">¿No tienes cuenta? <a onclick="showView('register')">Crear cuenta nueva</a></div>
+            </div>
+        </div>
+
+        <!-- ── VISTA: REGISTRO ── -->
+        <div class="form-view hidden" id="viewRegister">
+            <div class="form-header">
+                <div class="form-tag" style="background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.2);color:var(--orange-dk)"><div class="form-tag-dot" style="background:var(--orange)"></div>Nueva cuenta</div>
+                <div class="form-title">Solicitar acceso</div>
+                <div class="form-subtitle">Completa el formulario. El admin aprobará tu solicitud.</div>
+            </div>
+            <div class="form-body">
+                <div class="field">
+                    <label>Nombre completo</label>
+                    <div class="field-wrap">
+                        <input type="text" id="regNombre" placeholder="Ej. Juan Pérez">
+                        <span class="field-icon">👤</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <div class="field-wrap">
+                        <input type="email" id="regCorreo" placeholder="correo@ejemplo.com">
+                        <span class="field-icon">✉</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <div class="field-wrap">
+                        <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres">
+                        <span class="field-icon">🔒</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Empresa</label>
+                    <div class="empresa-select">
+                        <div class="empresa-opt selected" id="optRV4" onclick="selectEmpresa('RV4')">
+                            <div class="emp-icon">🏗️</div>
+                            <div class="emp-name">RV4</div>
+                            <div class="emp-desc">RV Cuatro</div>
+                        </div>
+                        <div class="empresa-opt" id="optCONSBA" onclick="selectEmpresa('CONSBA')">
+                            <div class="emp-icon">🏢</div>
+                            <div class="emp-name">CONSBA</div>
+                            <div class="emp-desc">Constructora</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert error" id="regError"><span>⚠</span><span id="regErrorText"></span></div>
+                <button class="btn-main" id="btnRegister" onclick="doRegister()">
+                    <div class="spinner" id="regSpinner"></div>
+                    <span id="regBtnText">Enviar solicitud</span>
+                </button>
+                <div class="divider"><div class="divider-line"></div><span class="divider-text">o</span><div class="divider-line"></div></div>
+                <div class="toggle-link">¿Ya tienes cuenta? <a onclick="showView('login')">Iniciar sesión</a></div>
+            </div>
+        </div>
+
+        <!-- ── VISTA: SOLICITUD ENVIADA ── -->
+        <div class="success-state" id="viewSuccess">
+            <div class="success-icon">✅</div>
+            <div class="success-title">¡Solicitud enviada!</div>
+            <p class="success-msg">Tu solicitud de acceso fue recibida. El administrador la revisará y te asignará los permisos correspondientes.</p>
+            <p class="success-sub">Recibirás confirmación una vez que sea aprobada.</p>
+            <button class="btn-main" style="width:100%;margin-top:8px" onclick="showView('login')">Volver al inicio de sesión</button>
+        </div>
+
     </div>
-
-    <form class="login-form" id="loginForm" onsubmit="return false">
-
-        <div class="field">
-            <label>Correo electrónico</label>
-            <div class="field-wrap">
-                <input type="email" id="email" placeholder="correo@ejemplo.com" required>
-                <span class="field-icon">✉</span>
-            </div>
-        </div>
-
-        <div class="field">
-            <label>Contraseña</label>
-            <div class="field-wrap">
-                <input type="password" id="password" placeholder="••••••••" required>
-                <span class="field-icon">🔒</span>
-            </div>
-            <a href="#" class="field-hint">¿Olvidaste tu contraseña?</a>
-        </div>
-
-        <div class="error-msg" id="errorMsg">
-            <span>⚠</span><span id="errorText">Credenciales incorrectas</span>
-        </div>
-
-        <div class="success-msg" id="successMsg">
-            <span>✓</span><span>Acceso correcto. Redirigiendo...</span>
-        </div>
-
-        <button class="btn-login" type="submit" id="btnLogin">
-            <div class="spinner" id="spinner"></div>
-            <span id="btnText">Iniciar sesión</span>
-        </button>
-
-        <div class="divider">
-            <div class="divider-line"></div>
-            <span class="divider-text">o</span>
-            <div class="divider-line"></div>
-        </div>
-
-        <div class="back-link">
-            ¿Aún no tienes cuenta? <a href="index.html">Volver al inicio</a>
-        </div>
-    </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -357,41 +367,179 @@
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcGdyb2psaXFleXljdmdua3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzA1NzYsImV4cCI6MjA5MTM0NjU3Nn0.Y6FQ-1qWd7HPMvTnK4alpKxM-YLJ5CsKmkorAZKMJrg'
     );
 
-    document.getElementById('loginForm').addEventListener('submit', async () => {
-        const email      = document.getElementById('email').value.trim();
-        const password   = document.getElementById('password').value;
-        const btn        = document.getElementById('btnLogin');
-        const spinner    = document.getElementById('spinner');
-        const btnText    = document.getElementById('btnText');
-        const errorMsg   = document.getElementById('errorMsg');
-        const errorTxt   = document.getElementById('errorText');
-        const successMsg = document.getElementById('successMsg');
+    let selectedEmpresa = 'RV4';
 
-        errorMsg.classList.remove('show');
-        successMsg.classList.remove('show');
-        btn.disabled = true;
-        spinner.style.display = 'block';
-        btnText.textContent = 'Verificando...';
+    // ── TOGGLE ENTRE VISTAS ────────────────────────────────────────────────
+    function showView(view) {
+        document.getElementById('viewLogin').className    = 'form-view ' + (view === 'login'    ? 'visible' : 'hidden');
+        document.getElementById('viewRegister').className = 'form-view ' + (view === 'register' ? 'visible' : 'hidden');
+        document.getElementById('viewSuccess').style.display = view === 'success' ? 'flex' : 'none';
+        hideAllAlerts();
+    }
 
-        const { error } = await client.auth.signInWithPassword({ email, password });
+    function hideAllAlerts() {
+        ['loginError','loginPending','loginRejected','loginSuccess','regError']
+            .forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('show'); });
+    }
 
-        if (!error) {
-            successMsg.classList.add('show');
-            btnText.textContent = 'Acceso concedido';
-            setTimeout(() => window.location.href = 'index.html', 1200);
-        } else {
-            spinner.style.display = 'none';
-            btn.disabled = false;
-            btnText.textContent = 'Iniciar sesión';
+    // ── SELECCIÓN DE EMPRESA ──────────────────────────────────────────────
+    function selectEmpresa(empresa) {
+        selectedEmpresa = empresa;
+        document.getElementById('optRV4').classList.toggle('selected', empresa === 'RV4');
+        document.getElementById('optCONSBA').classList.toggle('selected', empresa === 'CONSBA');
+    }
+
+    // ── LOGIN ─────────────────────────────────────────────────────────────
+    async function doLogin() {
+        const email    = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const btn      = document.getElementById('btnLogin');
+        const spinner  = document.getElementById('loginSpinner');
+        const btnText  = document.getElementById('loginBtnText');
+
+        hideAllAlerts();
+        if (!email || !password) { showAlert('loginError', 'Ingresa tu correo y contraseña.'); return; }
+
+        btn.disabled = true; spinner.style.display = 'block'; btnText.textContent = 'Verificando...';
+
+        const { data: authData, error: authError } = await client.auth.signInWithPassword({ email, password });
+
+        if (authError) {
+            btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Iniciar sesión';
             const msgs = {
                 'Invalid login credentials': 'Correo o contraseña incorrectos.',
-                'Email not confirmed':        'Correo no confirmado.',
-                'Too many requests':          'Demasiados intentos. Inténtalo más tarde.'
+                'Email not confirmed':        'Confirma tu correo electrónico primero.',
+                'Too many requests':          'Demasiados intentos. Espera unos minutos.'
             };
-            errorTxt.textContent = msgs[error.message] || error.message;
-            errorMsg.classList.add('show');
+            showAlert('loginError', msgs[authError.message] || authError.message);
+            return;
+        }
+
+        // Verificar si el usuario tiene acceso aprobado en la tabla usuarios
+        const { data: usuario } = await client
+            .from('usuarios').select('rol, estado').eq('id', authData.user.id).single();
+
+        if (usuario) {
+            // Usuario aprobado y en la tabla
+            showAlert('loginSuccess', '');
+            btnText.textContent = 'Acceso concedido';
+            setTimeout(() => window.location.href = 'index.html', 1200);
+            return;
+        }
+
+        // No está en usuarios → verificar solicitudes
+        const { data: solicitud } = await client
+            .from('solicitudes').select('estado').eq('correo', email).single();
+
+        await client.auth.signOut();
+        btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Iniciar sesión';
+
+        if (solicitud?.estado === 'pendiente') {
+            document.getElementById('loginPending').classList.add('show');
+        } else if (solicitud?.estado === 'rechazado') {
+            document.getElementById('loginRejected').classList.add('show');
+        } else {
+            showAlert('loginError', 'No tienes acceso al sistema. Solicita acceso al administrador.');
+        }
+    }
+
+    function showAlert(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const span = el.querySelector('span:last-child');
+        if (span && msg) span.textContent = msg;
+        el.classList.add('show');
+    }
+
+    // Permitir Enter para login
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const loginVisible = document.getElementById('viewLogin').classList.contains('visible');
+            const regVisible   = document.getElementById('viewRegister').classList.contains('visible');
+            if (loginVisible) doLogin();
+            if (regVisible)   doRegister();
         }
     });
+
+    // ── REGISTRO ─────────────────────────────────────────────────────────
+    async function doRegister() {
+        const nombre   = document.getElementById('regNombre').value.trim();
+        const correo   = document.getElementById('regCorreo').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const empresa  = selectedEmpresa;
+        const btn      = document.getElementById('btnRegister');
+        const spinner  = document.getElementById('regSpinner');
+        const btnText  = document.getElementById('regBtnText');
+
+        document.getElementById('regError').classList.remove('show');
+
+        if (!nombre)          { showAlert('regError', 'Ingresa tu nombre completo.'); return; }
+        if (!correo)          { showAlert('regError', 'Ingresa tu correo electrónico.'); return; }
+        if (password.length < 6) { showAlert('regError', 'La contraseña debe tener al menos 6 caracteres.'); return; }
+
+        btn.disabled = true; spinner.style.display = 'block'; btnText.textContent = 'Enviando...';
+
+        try {
+            // 1. Crear usuario en Supabase Auth
+            const { data: authData, error: authError } = await client.auth.signUp({
+                email: correo, password,
+                options: { data: { nombre, empresa } }
+            });
+
+            if (authError) {
+                if (authError.message.includes('already registered')) {
+                    showAlert('regError', 'Este correo ya tiene una solicitud registrada.');
+                } else {
+                    showAlert('regError', authError.message);
+                }
+                return;
+            }
+
+            // 2. Insertar en tabla solicitudes
+            const { error: solError } = await client.from('solicitudes').insert({
+                auth_user_id: authData.user?.id || null,
+                nombre,
+                correo,
+                empresa,
+                estado: 'pendiente'
+            });
+
+            if (solError) {
+                // Si la tabla no existe, seguir igual y mostrar éxito
+                console.warn('solicitudes table error:', solError.message);
+            }
+
+            // 3. Cerrar sesión (no debe poder entrar hasta ser aprobado)
+            await client.auth.signOut();
+
+            // 4. Notificar al administrador vía FormSubmit
+            try {
+                await fetch('https://formsubmit.co/ajax/gcifuentes@rvcuatro.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: '🔔 Nueva solicitud de acceso — Costos&Presupuestos',
+                        nombre,
+                        correo,
+                        empresa,
+                        mensaje: `Nueva solicitud de acceso al sistema.\n\nNombre: ${nombre}\nCorreo: ${correo}\nEmpresa: ${empresa}\nFecha: ${new Date().toLocaleString('es-GT')}`,
+                        _template: 'table'
+                    })
+                });
+            } catch (emailErr) {
+                console.warn('Email notification error:', emailErr);
+            }
+
+            // 5. Mostrar pantalla de éxito
+            document.getElementById('viewRegister').className = 'form-view hidden';
+            document.getElementById('viewSuccess').style.display = 'flex';
+
+        } catch (err) {
+            showAlert('regError', err.message || 'Error al enviar la solicitud. Intenta de nuevo.');
+        } finally {
+            btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Enviar solicitud';
+        }
+    }
 </script>
 </body>
 </html>

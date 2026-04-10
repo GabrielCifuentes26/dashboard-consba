@@ -218,6 +218,92 @@
         .empty-icon  { font-size: 2.5rem; margin-bottom: 12px; }
         .empty-text  { font-size: 0.88rem; }
 
+        /* ── TABS ── */
+        .tab-bar {
+            display: flex; gap: 4px; margin-bottom: 22px;
+            background: var(--bg); border-radius: 12px; padding: 4px;
+            width: fit-content;
+        }
+        .tab-btn {
+            padding: 8px 20px; border-radius: 9px; border: none;
+            background: transparent; font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; font-family: inherit; color: var(--gray);
+            transition: all .2s; display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn.active { background: var(--surface); color: var(--navy); box-shadow: var(--shadow); }
+        .tab-badge {
+            background: var(--orange); color: #fff;
+            font-size: 0.62rem; font-weight: 800;
+            padding: 2px 7px; border-radius: 10px; min-width: 20px; text-align: center;
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── SOLICITUDES ── */
+        .sol-card {
+            background: var(--surface); border-radius: 14px;
+            border: 1px solid var(--border); padding: 20px 22px;
+            display: grid; grid-template-columns: 1fr auto;
+            gap: 16px; align-items: center;
+            transition: box-shadow .2s; margin-bottom: 10px;
+            animation: slideUp .4s ease both;
+        }
+        @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .sol-card:hover { box-shadow: var(--shadow-lg); }
+        .sol-info { display: flex; align-items: center; gap: 14px; }
+        .sol-avatar {
+            width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dk, #ea6c0a));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 800; color: #fff;
+        }
+        .sol-name  { font-size: 0.9rem; font-weight: 800; color: var(--navy); }
+        .sol-email { font-size: 0.73rem; color: var(--gray2); margin-top: 2px; }
+        .sol-meta  { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .sol-date  { font-size: 0.68rem; color: var(--gray2); }
+        .sol-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-approve {
+            background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+            color: var(--green); padding: 7px 16px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            transition: background .15s; display: flex; align-items: center; gap: 5px;
+        }
+        .btn-approve:hover { background: rgba(16,185,129,0.18); }
+        .btn-reject {
+            background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.18);
+            color: var(--red); padding: 7px 16px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            transition: background .15s;
+        }
+        .btn-reject:hover { background: rgba(239,68,68,0.16); }
+
+        /* ── NIVEL BADGES ── */
+        .nivel-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .nivel-gold   { background: rgba(245,158,11,0.1); color: #b45309; border: 1px solid rgba(245,158,11,0.3); }
+        .nivel-silver { background: rgba(100,116,139,0.1); color: var(--gray); border: 1px solid rgba(100,116,139,0.2); }
+        .nivel-bronce { background: rgba(180,83,9,0.08);  color: #92400e; border: 1px solid rgba(180,83,9,0.2); }
+
+        /* ── SETUP BANNER ── */
+        .setup-banner {
+            background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+            display: none; align-items: flex-start; gap: 14px;
+        }
+        .setup-banner.show { display: flex; }
+        .setup-banner-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+        .setup-banner-title { font-size: 0.85rem; font-weight: 800; color: var(--amber); margin-bottom: 4px; }
+        .setup-banner-text  { font-size: 0.78rem; color: var(--gray); line-height: 1.6; }
+        .btn-setup {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+            background: var(--amber); color: #fff; padding: 7px 16px;
+            border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+            text-decoration: none; transition: opacity .2s;
+        }
+        .btn-setup:hover { opacity: 0.88; }
+
         /* ── MODAL ── */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(15,23,42,0.4);
@@ -364,6 +450,45 @@
     <!-- Content -->
     <div class="content">
 
+        <!-- Setup Banner (aparece si falta correr el SQL) -->
+        <div class="setup-banner" id="setupBanner">
+            <div class="setup-banner-icon">⚙️</div>
+            <div>
+                <div class="setup-banner-title">Configuración inicial requerida</div>
+                <div class="setup-banner-text">
+                    Para activar el módulo de solicitudes, ejecuta el script SQL una sola vez en Supabase.
+                    <br>Abre el SQL Editor, pega el contenido del archivo <strong>setup.sql</strong> y ejecuta.
+                </div>
+                <a href="https://supabase.com/dashboard/project/iipgrojliqeyycvgnkrc/sql" target="_blank" class="btn-setup">
+                    ↗ Abrir SQL Editor en Supabase
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('solicitudes')">
+                🔔 Solicitudes <span class="tab-badge" id="solBadge" style="display:none">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('usuarios')">👥 Usuarios</button>
+        </div>
+
+        <!-- TAB: SOLICITUDES -->
+        <div class="tab-panel active" id="tabSolicitudes">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Solicitudes de acceso pendientes</div>
+                    <div class="section-sub">Revisa, aprueba o rechaza cada solicitud. Asigna empresa, nivel y rol.</div>
+                </div>
+            </div>
+            <div id="solContainer">
+                <div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Cargando solicitudes...</div></div>
+            </div>
+        </div>
+
+        <!-- TAB: USUARIOS -->
+        <div class="tab-panel" id="tabUsuarios">
+
         <!-- Stats -->
         <div class="stats-row">
             <div class="stat-card c1">
@@ -430,8 +555,81 @@
             </table>
         </div>
 
+        </div><!-- /tabUsuarios -->
     </div><!-- /content -->
 </div><!-- /main -->
+
+<!-- Modal: Aprobar Solicitud -->
+<div class="modal-overlay" id="approveOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Aprobar solicitud</div>
+            <button class="modal-close" onclick="closeApproveModal()">✕</button>
+        </div>
+        <div id="approveUserInfo" style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;font-size:0.82rem;color:var(--gray);line-height:1.7;"></div>
+        <div class="form-grid">
+            <input type="hidden" id="approveSolId">
+            <input type="hidden" id="approveAuthId">
+            <input type="hidden" id="approveCorreo">
+            <input type="hidden" id="approveNombre">
+            <div class="form-row-2">
+                <div class="form-field">
+                    <label>Empresa</label>
+                    <select id="approveEmpresa">
+                        <option value="RV4">RV4</option>
+                        <option value="CONSBA">CONSBA</option>
+                        <option value="Ambas">Ambas</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Nivel de acceso</label>
+                    <select id="approveNivel">
+                        <option value="Gold">🥇 Gold</option>
+                        <option value="Silver">🥈 Silver</option>
+                        <option value="Bronce" selected>🥉 Bronce</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Rol</label>
+                <select id="approveRol">
+                    <option value="usuario">Usuario</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeApproveModal()">Cancelar</button>
+            <button class="btn-save" id="btnApprove" onclick="confirmApprove()" style="background:linear-gradient(135deg,var(--green),#059669)">
+                ✓ Aprobar acceso
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rechazar Solicitud -->
+<div class="modal-overlay" id="rejectOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Rechazar solicitud</div>
+            <button class="modal-close" onclick="closeRejectModal()">✕</button>
+        </div>
+        <div id="rejectUserInfo" style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;font-size:0.82rem;color:var(--gray);line-height:1.7;"></div>
+        <div class="form-grid">
+            <input type="hidden" id="rejectSolId">
+            <div class="form-field">
+                <label>Motivo del rechazo (opcional)</label>
+                <input type="text" id="rejectNota" placeholder="Ej. No pertenece a la organización">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeRejectModal()">Cancelar</button>
+            <button class="btn-save" id="btnReject" onclick="confirmReject()" style="background:linear-gradient(135deg,var(--red),#dc2626)">
+                ✕ Rechazar solicitud
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- Modal: Agregar / Editar -->
 <div class="modal-overlay" id="modalOverlay">
@@ -526,6 +724,7 @@
             return;
         }
         loadUsers();
+        loadSolicitudes();
     });
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -750,6 +949,179 @@
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
+
+    // ── TABS ─────────────────────────────────────────────────────────────────
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', (i === 0 && tab === 'solicitudes') || (i === 1 && tab === 'usuarios'));
+        });
+        document.getElementById('tabSolicitudes').classList.toggle('active', tab === 'solicitudes');
+        document.getElementById('tabUsuarios').classList.toggle('active', tab === 'usuarios');
+    }
+
+    // ── SOLICITUDES ───────────────────────────────────────────────────────────
+    let allSolicitudes = [];
+    const SERVICE_CLIENT = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    async function loadSolicitudes() {
+        const { data, error } = await SERVICE_CLIENT
+            .from('solicitudes')
+            .select('*')
+            .eq('estado', 'pendiente')
+            .order('creado_en', { ascending: false });
+
+        if (error) {
+            if (error.message.includes('does not exist') || error.code === '42P01') {
+                document.getElementById('setupBanner').classList.add('show');
+                document.getElementById('solContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚙️</div>
+                        <div class="empty-text">Ejecuta el script <strong>setup.sql</strong> en Supabase para activar este módulo.</div>
+                    </div>`;
+            }
+            return;
+        }
+
+        allSolicitudes = data || [];
+        renderSolicitudes();
+        updateSolBadge();
+    }
+
+    function updateSolBadge() {
+        const badge = document.getElementById('solBadge');
+        if (allSolicitudes.length > 0) {
+            badge.textContent = allSolicitudes.length;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function renderSolicitudes() {
+        const container = document.getElementById('solContainer');
+        if (allSolicitudes.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">✅</div>
+                    <div class="empty-text">No hay solicitudes pendientes.</div>
+                </div>`;
+            return;
+        }
+        container.innerHTML = allSolicitudes.map((s, i) => {
+            const inicial = (s.nombre || s.correo)[0].toUpperCase();
+            const fecha   = s.creado_en
+                ? new Date(s.creado_en).toLocaleDateString('es', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                : '—';
+            const empClass = s.empresa === 'RV4' ? 'emp-rv4' : 'emp-consba';
+            return `
+            <div class="sol-card" style="animation-delay:${i*0.06}s">
+                <div class="sol-info">
+                    <div class="sol-avatar">${inicial}</div>
+                    <div>
+                        <div class="sol-name">${s.nombre || '—'}</div>
+                        <div class="sol-email">${s.correo}</div>
+                        <div class="sol-meta">
+                            <span class="empresa-badge ${empClass}">${s.empresa || '—'}</span>
+                            <span class="sol-date">📅 ${fecha}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="sol-actions">
+                    <button class="btn-approve" onclick="openApproveModal('${s.id}','${s.auth_user_id || ''}','${s.correo}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.empresa||'RV4'}')">✓ Aprobar</button>
+                    <button class="btn-reject"  onclick="openRejectModal('${s.id}','${s.correo}','${(s.nombre||'').replace(/'/g,"\\'")}')">✕ Rechazar</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── MODAL APROBAR ─────────────────────────────────────────────────────────
+    function openApproveModal(solId, authId, correo, nombre, empresa) {
+        document.getElementById('approveSolId').value  = solId;
+        document.getElementById('approveAuthId').value = authId;
+        document.getElementById('approveCorreo').value = correo;
+        document.getElementById('approveNombre').value = nombre;
+        document.getElementById('approveEmpresa').value = empresa;
+        document.getElementById('approveUserInfo').innerHTML = `
+            <strong>${nombre}</strong><br>
+            ${correo}<br>
+            Empresa solicitada: <strong>${empresa}</strong>`;
+        document.getElementById('approveOverlay').classList.add('open');
+    }
+    function closeApproveModal() {
+        document.getElementById('approveOverlay').classList.remove('open');
+    }
+
+    async function confirmApprove() {
+        const solId   = document.getElementById('approveSolId').value;
+        const authId  = document.getElementById('approveAuthId').value;
+        const correo  = document.getElementById('approveCorreo').value;
+        const nombre  = document.getElementById('approveNombre').value;
+        const empresa = document.getElementById('approveEmpresa').value;
+        const nivel   = document.getElementById('approveNivel').value;
+        const rol     = document.getElementById('approveRol').value;
+        const btn     = document.getElementById('btnApprove');
+
+        btn.disabled = true; btn.textContent = 'Aprobando...';
+
+        try {
+            // Insertar en tabla usuarios
+            const insertData = { nombre, correo, rol, empresa, nivel, estado: 'activo' };
+            if (authId) insertData.id = authId;
+
+            const { error: userErr } = await SERVICE_CLIENT.from('usuarios').insert(insertData);
+            if (userErr) throw userErr;
+
+            // Actualizar solicitud a aprobada
+            await SERVICE_CLIENT.from('solicitudes').update({ estado: 'aprobado' }).eq('id', solId);
+
+            closeApproveModal();
+            showToast(`✓ ${nombre} aprobado como ${nivel} en ${empresa}`, 'success');
+            loadSolicitudes();
+            loadUsers();
+        } catch (err) {
+            showToast(err.message || 'Error al aprobar', 'error');
+        } finally {
+            btn.disabled = false; btn.textContent = '✓ Aprobar acceso';
+        }
+    }
+
+    // ── MODAL RECHAZAR ────────────────────────────────────────────────────────
+    function openRejectModal(solId, correo, nombre) {
+        document.getElementById('rejectSolId').value = solId;
+        document.getElementById('rejectNota').value  = '';
+        document.getElementById('rejectUserInfo').innerHTML = `
+            <strong>${nombre}</strong><br>${correo}`;
+        document.getElementById('rejectOverlay').classList.add('open');
+    }
+    function closeRejectModal() {
+        document.getElementById('rejectOverlay').classList.remove('open');
+    }
+
+    async function confirmReject() {
+        const solId = document.getElementById('rejectSolId').value;
+        const nota  = document.getElementById('rejectNota').value.trim();
+        const btn   = document.getElementById('btnReject');
+
+        btn.disabled = true; btn.textContent = 'Rechazando...';
+        try {
+            await SERVICE_CLIENT.from('solicitudes')
+                .update({ estado: 'rechazado', notas: nota || null })
+                .eq('id', solId);
+            closeRejectModal();
+            showToast('Solicitud rechazada', 'success');
+            loadSolicitudes();
+        } catch (err) {
+            showToast('Error al rechazar', 'error');
+        } finally {
+            btn.disabled = false; btn.textContent = '✕ Rechazar solicitud';
+        }
+    }
+
+    // Cerrar modales de solicitudes al click fuera
+    document.getElementById('approveOverlay').addEventListener('click', function(e) { if (e.target === this) closeApproveModal(); });
+    document.getElementById('rejectOverlay').addEventListener('click',  function(e) { if (e.target === this) closeRejectModal(); });
+
+    // Cargar solicitudes al iniciar (se llama dentro del auth check después de loadUsers)
 </script>
 </body>
 </html>
