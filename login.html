@@ -153,6 +153,34 @@
         .field-hint { text-align: right; font-size: 0.72rem; color: var(--blue); cursor: pointer; text-decoration: none; font-weight: 600; transition: color .2s; }
         .field-hint:hover { color: var(--blue-dark); }
 
+        /* ── EYE TOGGLE ── */
+        .eye-btn {
+            position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; color: var(--gray2);
+            font-size: 1rem; padding: 2px; transition: color .15s; line-height: 1;
+        }
+        .eye-btn:hover { color: var(--navy); }
+
+        /* ── PASSWORD STRENGTH ── */
+        .pass-strength { margin-top: 6px; }
+        .pass-strength-bar {
+            height: 4px; border-radius: 2px; background: var(--border);
+            overflow: hidden; margin-bottom: 4px;
+        }
+        .pass-strength-fill {
+            height: 100%; border-radius: 2px; width: 0%;
+            transition: width .3s, background .3s;
+        }
+        .pass-strength-text { font-size: 0.68rem; font-weight: 600; color: var(--gray2); }
+        .str-weak   .pass-strength-fill { width: 25%; background: var(--red); }
+        .str-fair   .pass-strength-fill { width: 50%; background: var(--amber); }
+        .str-good   .pass-strength-fill { width: 75%; background: var(--blue); }
+        .str-strong .pass-strength-fill { width: 100%; background: var(--green); }
+        .str-weak   .pass-strength-text { color: var(--red); }
+        .str-fair   .pass-strength-text { color: var(--amber); }
+        .str-good   .pass-strength-text { color: var(--blue); }
+        .str-strong .pass-strength-text { color: var(--green); }
+
         /* Empresa selector visual */
         .empresa-select { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .empresa-opt {
@@ -277,6 +305,7 @@
                     <div class="field-wrap">
                         <input type="password" id="loginPassword" placeholder="••••••••" required>
                         <span class="field-icon">🔒</span>
+                        <button type="button" class="eye-btn" id="eyeLoginPass" onclick="toggleEye('loginPassword','eyeLoginPass')">👁</button>
                     </div>
                     <a href="#" class="field-hint">¿Olvidaste tu contraseña?</a>
                 </div>
@@ -318,8 +347,13 @@
                 <div class="field">
                     <label>Contraseña</label>
                     <div class="field-wrap">
-                        <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres">
+                        <input type="password" id="regPassword" placeholder="Mín. 8 car., mayúscula, número, símbolo" oninput="updatePassStrength(this.value)">
                         <span class="field-icon">🔒</span>
+                        <button type="button" class="eye-btn" id="eyeRegPass" onclick="toggleEye('regPassword','eyeRegPass')">👁</button>
+                    </div>
+                    <div class="pass-strength" id="passStrength" style="display:none">
+                        <div class="pass-strength-bar"><div class="pass-strength-fill" id="passStrFill"></div></div>
+                        <div class="pass-strength-text" id="passStrText"></div>
                     </div>
                 </div>
                 <div class="field">
@@ -368,6 +402,31 @@
     );
 
     let selectedEmpresa = 'RV4';
+
+    // ── EYE TOGGLE ────────────────────────────────────────────────────────
+    function toggleEye(inputId, btnId) {
+        const inp = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+        else                         { inp.type = 'password'; btn.textContent = '👁'; }
+    }
+
+    // ── PASSWORD STRENGTH ─────────────────────────────────────────────────
+    function updatePassStrength(val) {
+        const el = document.getElementById('passStrength');
+        const wrap = el.parentElement.querySelector('.field-wrap').closest('.field');
+        if (!val) { el.style.display = 'none'; el.className = 'pass-strength'; return; }
+        el.style.display = 'block';
+        let score = 0;
+        if (val.length >= 8)            score++;
+        if (/[A-Z]/.test(val))          score++;
+        if (/[0-9]/.test(val))          score++;
+        if (/[^A-Za-z0-9]/.test(val))   score++;
+        const levels = ['str-weak','str-fair','str-good','str-strong'];
+        const labels = ['Débil','Regular','Buena','Fuerte'];
+        el.className = 'pass-strength ' + levels[score - 1];
+        document.getElementById('passStrText').textContent = labels[score - 1] || '';
+    }
 
     // ── TOGGLE ENTRE VISTAS ────────────────────────────────────────────────
     function showView(view) {
@@ -473,9 +532,12 @@
 
         document.getElementById('regError').classList.remove('show');
 
-        if (!nombre)          { showAlert('regError', 'Ingresa tu nombre completo.'); return; }
-        if (!correo)          { showAlert('regError', 'Ingresa tu correo electrónico.'); return; }
-        if (password.length < 6) { showAlert('regError', 'La contraseña debe tener al menos 6 caracteres.'); return; }
+        if (!nombre)  { showAlert('regError', 'Ingresa tu nombre completo.'); return; }
+        if (!correo)  { showAlert('regError', 'Ingresa tu correo electrónico.'); return; }
+        if (password.length < 8)            { showAlert('regError', 'La contraseña debe tener mínimo 8 caracteres.'); return; }
+        if (!/[A-Z]/.test(password))        { showAlert('regError', 'La contraseña debe incluir al menos una letra mayúscula.'); return; }
+        if (!/[0-9]/.test(password))        { showAlert('regError', 'La contraseña debe incluir al menos un número.'); return; }
+        if (!/[^A-Za-z0-9]/.test(password)) { showAlert('regError', 'La contraseña debe incluir al menos un símbolo (!, @, #, $...).'); return; }
 
         btn.disabled = true; spinner.style.display = 'block'; btnText.textContent = 'Enviando...';
 
