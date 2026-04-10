@@ -67,7 +67,7 @@
             background:linear-gradient(135deg,var(--blue),var(--purple));
             -webkit-background-clip:text; background-clip:text;
         }
-        .panel-sub { font-size:0.92rem; color:rgba(255,255,255,0.42); line-height:1.8; max-width:380px; margin-bottom:52px; }
+        .panel-sub { font-size:0.96rem; color:rgba(255,255,255,0.72); line-height:1.8; max-width:380px; margin-bottom:52px; }
         .panel-stats { display:flex; gap:44px; }
         .p-stat-num { font-size:1.85rem; font-weight:900; color:#fff; }
         .p-stat-lbl { font-size:0.68rem; color:rgba(255,255,255,0.32); margin-top:3px; letter-spacing:0.5px; text-transform:uppercase; }
@@ -112,10 +112,11 @@
         /* ── GLASS CARD ── */
         .form-glass {
             width:100%; max-width:426px;
-            background:rgba(255,255,255,0.97);
+            background:rgba(255,255,255,0.82);
+            backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
             border-radius:28px; padding:46px 42px;
-            border:1px solid rgba(255,255,255,0.9);
-            box-shadow:0 32px 96px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.6);
+            border:1px solid rgba(255,255,255,0.55);
+            box-shadow:0 32px 96px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.7);
             animation:cardIn .7s cubic-bezier(.34,1.56,.64,1) both;
         }
         @keyframes cardIn { from{opacity:0;transform:translateY(32px) scale(.96)} to{opacity:1;transform:none} }
@@ -333,7 +334,7 @@
             </svg>
         </div>
         <div class="panel-heading">Costos &amp;<br><em>Presupuestos</em></div>
-        <p class="panel-sub">Accede al sistema de gestión y control presupuestario en tiempo real de todos tus proyectos de construcción.</p>
+        <p class="panel-sub">Gestiona y controla el presupuesto de todos los proyectos desde un solo lugar.</p>
         <div class="panel-stats">
             <div><div class="p-stat-num">22</div><div class="p-stat-lbl">Proyectos</div></div>
             <div><div class="p-stat-num">91.98%</div><div class="p-stat-lbl">Avance</div></div>
