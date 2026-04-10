@@ -3,443 +3,624 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costos&Presupuestos — Residencias Premium</title>
+    <title>Costos&Presupuestos — Proyectos</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #08080f; color: #e0e0e0; overflow-x: hidden; }
+        :root {
+            --bg:        #f0f4f8;
+            --surface:   #ffffff;
+            --navy:      #0f172a;
+            --navy2:     #1e293b;
+            --gray:      #64748b;
+            --gray2:     #94a3b8;
+            --border:    #e2e8f0;
+            --blue:      #0ea5e9;
+            --blue-dark: #0284c7;
+            --orange:    #f97316;
+            --orange-dk: #ea6c0a;
+            --green:     #10b981;
+            --shadow:    0 4px 24px rgba(15,23,42,0.10);
+            --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--navy);
+            overflow-x: hidden;
+        }
 
         /* ── NAV ── */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            background: rgba(8, 8, 15, 0.92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            padding: 14px 50px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 50px;
             display: flex; align-items: center; justify-content: space-between;
+            transition: box-shadow .3s;
         }
-        .logo { font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: 3px; text-transform: uppercase; }
-        .logo span { color: #4ade80; }
-        .nav-links { display: flex; list-style: none; gap: 30px; }
-        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.82rem; font-weight: 500; transition: color .2s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; }
-        .nav-actions { display: flex; align-items: center; gap: 10px; }
-        .nav-phone { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-right: 6px; }
-        .btn-nav {
-            padding: 7px 20px; border-radius: 6px; text-decoration: none;
-            font-size: 0.78rem; font-weight: 600; transition: all .2s;
+        nav.scrolled { box-shadow: var(--shadow); }
+        .logo {
+            font-size: 1.2rem; font-weight: 900; color: var(--navy);
+            letter-spacing: 2px; text-transform: uppercase;
         }
-        .btn-login { color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); }
-        .btn-login:hover { border-color: rgba(255,255,255,0.6); color: #fff; }
-        .btn-dashboard { background: #4ade80; color: #08080f; }
-        .btn-dashboard:hover { background: #22c55e; }
+        .logo span { color: var(--blue); }
 
         /* ── HERO ── */
         .hero {
-            height: 100vh; position: relative;
-            display: flex; align-items: center; overflow: hidden;
+            min-height: 100vh; padding: 120px 50px 80px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 40%, #fff 100%);
+            display: flex; align-items: center; gap: 60px;
+            position: relative; overflow: hidden;
         }
-        .hero-bg {
-            position: absolute; inset: 0;
-            background: linear-gradient(135deg, #08080f 0%, #0d1b35 45%, #0f2a4a 100%);
+        .hero::before {
+            content: '';
+            position: absolute; top: -200px; right: -200px;
+            width: 700px; height: 700px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+            animation: floatBg 8s ease-in-out infinite;
         }
-        .hero-shape-1 {
-            position: absolute; top: 8%; right: 4%; width: 48%; height: 80%;
-            background: linear-gradient(145deg, #0f2040 0%, #162a4a 50%, #1a3a6a 100%);
-            border-radius: 20px; transform: rotate(3deg);
-            border: 1px solid rgba(74,222,128,0.08);
+        .hero::after {
+            content: '';
+            position: absolute; bottom: -150px; left: -100px;
+            width: 500px; height: 500px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+            animation: floatBg 10s ease-in-out infinite reverse;
         }
-        .hero-shape-2 {
-            position: absolute; top: 12%; right: 7%; width: 42%; height: 70%;
-            background: linear-gradient(145deg, rgba(74,222,128,0.03) 0%, rgba(99,102,241,0.06) 100%);
-            border-radius: 16px; transform: rotate(-1deg);
-            border: 1px solid rgba(255,255,255,0.06);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0,0); }
+            50%       { transform: translate(30px, -30px); }
         }
-        .mock-window {
-            width: 85%; background: rgba(15,30,60,0.9); border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.08); padding: 14px;
-        }
-        .mock-bar { display: flex; gap: 6px; margin-bottom: 12px; }
-        .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .mock-line { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-bottom: 7px; }
-        .mock-line.w60 { width: 60%; }
-        .mock-line.w80 { width: 80%; }
-        .mock-line.w40 { width: 40%; }
-        .mock-stat-row { display: flex; gap: 8px; margin-top: 10px; }
-        .mock-stat { flex: 1; background: rgba(99,102,241,0.12); border-radius: 6px; height: 36px; border: 1px solid rgba(99,102,241,0.15); }
-
-        .hero-content {
-            position: relative; z-index: 1;
-            padding: 0 50px; max-width: 580px;
-        }
+        .hero-content { flex: 1; max-width: 540px; position: relative; z-index: 1; }
         .hero-badge {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: rgba(74,222,128,0.08);
-            border: 1px solid rgba(74,222,128,0.25);
-            color: #4ade80; padding: 5px 14px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.3);
+            color: var(--blue-dark); padding: 6px 16px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
             text-transform: uppercase; margin-bottom: 24px;
+            animation: fadeInDown .6s ease both;
         }
-        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.8)} }
 
         .hero h1 {
-            font-size: 3.8rem; font-weight: 900; color: #fff;
-            line-height: 1.05; margin-bottom: 20px; letter-spacing: -1px;
+            font-size: 3.6rem; font-weight: 900; color: var(--navy);
+            line-height: 1.05; margin-bottom: 20px; letter-spacing: -1.5px;
+            animation: fadeInUp .7s ease .1s both;
         }
-        .hero h1 em { color: #4ade80; font-style: normal; }
+        .hero h1 em { color: var(--blue); font-style: normal; }
         .hero p {
-            color: rgba(255,255,255,0.52); font-size: 0.95rem;
-            line-height: 1.75; margin-bottom: 34px; max-width: 440px;
+            color: var(--gray); font-size: 1rem; line-height: 1.75;
+            margin-bottom: 36px; max-width: 440px;
+            animation: fadeInUp .7s ease .2s both;
         }
-        .subscribe-form { display: flex; max-width: 400px; margin-bottom: 28px; }
-        .subscribe-form input {
-            flex: 1; background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.13); border-right: none;
-            color: #fff; padding: 12px 18px;
-            border-radius: 7px 0 0 7px; font-size: 0.84rem;
-            font-family: inherit; outline: none; transition: border-color .2s;
+        .hero-cta {
+            display: flex; gap: 14px; flex-wrap: wrap;
+            animation: fadeInUp .7s ease .3s both;
         }
-        .subscribe-form input:focus { border-color: rgba(74,222,128,0.4); }
-        .subscribe-form input::placeholder { color: rgba(255,255,255,0.3); }
-        .subscribe-form button {
-            background: #4ade80; border: none; color: #08080f;
-            padding: 12px 18px; border-radius: 0 7px 7px 0;
-            cursor: pointer; font-size: 1rem; font-weight: 700;
-            transition: background .2s;
+        .btn-primary {
+            background: var(--orange); color: #fff;
+            padding: 13px 30px; border-radius: 9px; font-weight: 700;
+            font-size: 0.9rem; text-decoration: none; border: none; cursor: pointer;
+            transition: background .2s, transform .15s, box-shadow .2s;
+            box-shadow: 0 4px 16px rgba(249,115,22,0.35);
         }
-        .subscribe-form button:hover { background: #22c55e; }
-        .btn-more {
-            display: inline-block; border: 2px solid rgba(74,222,128,0.5);
-            color: #4ade80; padding: 11px 30px; border-radius: 7px;
-            text-decoration: none; font-size: 0.84rem; font-weight: 600;
-            transition: all .2s;
+        .btn-primary:hover { background: var(--orange-dk); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary {
+            background: transparent; color: var(--navy);
+            padding: 13px 30px; border-radius: 9px; font-weight: 600;
+            font-size: 0.9rem; text-decoration: none; border: 2px solid var(--border);
+            transition: border-color .2s, color .2s, background .2s;
         }
-        .btn-more:hover { background: rgba(74,222,128,0.1); border-color: #4ade80; }
+        .btn-secondary:hover { border-color: var(--blue); color: var(--blue); background: rgba(14,165,233,0.05); }
+
+        .hero-visual {
+            flex: 1; max-width: 520px; position: relative; z-index: 1;
+            animation: fadeInRight .8s ease .2s both;
+        }
+        .hero-card {
+            background: var(--surface); border-radius: 20px; padding: 28px;
+            box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+            transform: rotate(-2deg); transition: transform .3s;
+        }
+        .hero-card:hover { transform: rotate(0deg); }
+        .hc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .hc-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .hc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+        .hc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+        .hc-stat { background: var(--bg); border-radius: 12px; padding: 14px; text-align: center; }
+        .hc-stat-val { font-size: 1.3rem; font-weight: 800; color: var(--navy); }
+        .hc-stat-lbl { font-size: 0.65rem; color: var(--gray2); margin-top: 2px; }
+        .hc-bar-section { display: flex; flex-direction: column; gap: 10px; }
+        .hc-bar-row { display: flex; align-items: center; gap: 10px; }
+        .hc-bar-name { font-size: 0.72rem; color: var(--gray); width: 70px; flex-shrink: 0; }
+        .hc-bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+        .hc-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+        .hc-bar-pct { font-size: 0.68rem; font-weight: 700; color: var(--navy); width: 34px; text-align: right; }
 
         .hero-stats {
-            position: absolute; bottom: 50px; left: 50px;
-            display: flex; gap: 48px; z-index: 1;
+            display: flex; gap: 40px; margin-top: 48px;
+            animation: fadeInUp .7s ease .4s both;
         }
-        .stat-num { font-size: 1.9rem; font-weight: 800; color: #fff; }
-        .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+        .stat-num { font-size: 1.8rem; font-weight: 900; color: var(--navy); }
+        .stat-label { font-size: 0.72rem; color: var(--gray); margin-top: 2px; }
 
-        /* ── FEATURES ── */
-        .features { background: #06060d; padding: 100px 50px; }
+        /* ── KEYFRAMES ── */
+        @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeInUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeInRight{ from { opacity:0; transform:translateX(40px);  } to { opacity:1; transform:translateX(0); } }
+        @keyframes fadeIn     { from { opacity:0; } to { opacity:1; } }
+        @keyframes scaleIn    { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+        @keyframes slideUp    { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ── SECTION BASE ── */
+        .section { padding: 90px 50px; }
         .section-tag {
-            color: #4ade80; font-size: 0.7rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 12px;
+            display: inline-block;
+            color: var(--blue); font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 10px;
         }
         .section-heading {
-            font-size: 2.2rem; font-weight: 800; color: #fff;
-            margin-bottom: 55px; letter-spacing: -0.5px;
+            font-size: 2.2rem; font-weight: 800; color: var(--navy);
+            letter-spacing: -0.5px; margin-bottom: 10px;
         }
-        .features-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
-        .feature-card {
-            background: #0d1a2e; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px; padding: 28px 22px;
-            transition: transform .25s, border-color .25s;
+        .section-sub {
+            color: var(--gray); font-size: 0.95rem; max-width: 480px;
         }
-        .feature-card:hover { transform: translateY(-5px); border-color: rgba(74,222,128,0.25); }
-        .f-icon {
-            width: 46px; height: 46px; border-radius: 11px;
-            background: rgba(74,222,128,0.08);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.35rem; margin-bottom: 18px;
-        }
-        .feature-card h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
-        .feature-card p { font-size: 0.8rem; color: rgba(255,255,255,0.42); line-height: 1.65; }
 
-        /* ── PROPERTIES ── */
-        .properties { background: #080813; padding: 100px 50px; }
-        .props-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 55px; }
-        .prop-card {
-            border-radius: 14px; overflow: hidden;
-            background: #0d1a2e; border: 1px solid rgba(255,255,255,0.06);
-            transition: transform .25s, box-shadow .25s;
+        /* ── CATEGORIES ── */
+        .categories-section { background: var(--surface); padding: 80px 50px; }
+        .cat-header { text-align: center; margin-bottom: 50px; }
+        .cat-header .section-sub { margin: 0 auto; }
+        .cat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 24px; max-width: 900px; margin: 0 auto;
         }
-        .prop-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .cat-card {
+            background: var(--bg); border: 2px solid var(--border);
+            border-radius: 20px; padding: 36px 28px;
+            text-align: center; cursor: pointer;
+            transition: all .3s cubic-bezier(.34,1.56,.64,1);
+            position: relative; overflow: hidden;
+        }
+        .cat-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(249,115,22,0.04));
+            opacity: 0; transition: opacity .3s;
+        }
+        .cat-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--blue); }
+        .cat-card:hover::before { opacity: 1; }
+        .cat-card.active {
+            background: var(--navy); border-color: var(--navy);
+            transform: translateY(-6px); box-shadow: 0 16px 40px rgba(15,23,42,0.25);
+        }
+        .cat-card.active::before { opacity: 0; }
+        .cat-card.active .cat-icon { background: rgba(255,255,255,0.1); }
+        .cat-card.active .cat-name { color: #fff; }
+        .cat-card.active .cat-count { color: rgba(255,255,255,0.5); }
+        .cat-icon {
+            width: 68px; height: 68px; border-radius: 18px;
+            background: var(--surface); display: flex; align-items: center;
+            justify-content: center; font-size: 2rem; margin: 0 auto 18px;
+            box-shadow: var(--shadow); transition: background .3s;
+        }
+        .cat-name { font-size: 1.15rem; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+        .cat-count { font-size: 0.78rem; color: var(--gray2); }
+
+        /* ── PROJECTS + MAP ROW ── */
+        .projects-section { background: var(--bg); padding: 80px 50px; }
+        .projects-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 36px; }
+        .active-cat-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--navy); color: #fff;
+            padding: 6px 16px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+            transition: all .3s;
+        }
+        .projects-map-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 28px; align-items: start;
+        }
+
+        /* ── PROJECTS GRID ── */
+        .props-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 18px; max-height: 680px; overflow-y: auto;
+            padding-right: 4px;
+        }
+        .props-grid::-webkit-scrollbar { width: 5px; }
+        .props-grid::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
+        .props-grid::-webkit-scrollbar-thumb { background: var(--gray2); border-radius: 3px; }
+
+        .prop-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border); overflow: hidden;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+            animation: scaleIn .4s ease both;
+            text-decoration: none; color: inherit; display: block;
+        }
+        .prop-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--blue); }
         .prop-img {
-            height: 190px; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+            height: 140px; display: flex; align-items: center;
+            justify-content: center; font-size: 3rem; position: relative;
         }
         .prop-img::after {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5));
+            background: linear-gradient(to bottom, transparent 50%, rgba(15,23,42,0.08));
         }
-        .prop-badge {
-            position: absolute; top: 14px; left: 14px; z-index: 1;
-            background: #4ade80; color: #08080f;
-            font-size: 0.62rem; font-weight: 800; padding: 3px 10px; border-radius: 4px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .prop-info { padding: 20px; }
-        .prop-name { font-size: 0.96rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
-        .prop-location { font-size: 0.74rem; color: rgba(255,255,255,0.38); margin-bottom: 14px; }
-        .prop-price { font-size: 1.15rem; font-weight: 800; color: #4ade80; }
+        .prop-info { padding: 16px; }
+        .prop-name { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+        .prop-location { font-size: 0.72rem; color: var(--gray2); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+        .prop-price { font-size: 1.05rem; font-weight: 800; color: var(--blue-dark); }
         .prop-details {
-            display: flex; gap: 16px; margin-top: 12px; padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex; gap: 10px; margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border);
         }
-        .prop-detail { font-size: 0.72rem; color: rgba(255,255,255,0.38); }
+        .prop-detail { font-size: 0.68rem; color: var(--gray2); display: flex; align-items: center; gap: 3px; }
 
-        /* ── CONTACT ── */
-        .contact {
-            background: linear-gradient(135deg, #0a0f1e, #0d1b35, #0f2040);
-            padding: 100px 50px;
+        /* ── MAP ── */
+        .map-container {
+            border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky; top: 90px;
         }
-        .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 70px; margin-top: 55px; align-items: start; }
-        .contact-intro h3 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 14px; }
-        .contact-intro p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.75; margin-bottom: 30px; }
-        .c-detail { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 0.85rem; color: rgba(255,255,255,0.55); }
-        .c-icon {
-            width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
-            background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15);
-            display: flex; align-items: center; justify-content: center;
+        #map { height: 680px; width: 100%; }
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px !important;
+            box-shadow: var(--shadow-lg) !important;
+            font-family: 'Inter', sans-serif !important;
         }
-        .contact-form { display: flex; flex-direction: column; gap: 14px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .form-field { display: flex; flex-direction: column; gap: 5px; }
-        .form-field label { font-size: 0.7rem; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-field input, .form-field textarea, .form-field select {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; color: #fff; padding: 11px 14px;
-            font-size: 0.85rem; font-family: inherit; outline: none; transition: border-color .2s;
+        .leaflet-popup-content { margin: 12px 16px !important; }
+        .map-popup-name { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+        .map-popup-cat { font-size: 0.7rem; color: var(--gray); margin-bottom: 10px; }
+        .map-popup-btn {
+            display: block; background: var(--orange); color: #fff;
+            text-align: center; padding: 7px 14px; border-radius: 7px;
+            font-size: 0.75rem; font-weight: 700; text-decoration: none;
+            transition: background .2s;
         }
-        .form-field input:focus, .form-field textarea:focus { border-color: rgba(74,222,128,0.35); }
-        .form-field input::placeholder, .form-field textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .form-field textarea { height: 88px; resize: none; }
-        .btn-submit {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: #08080f; border: none; padding: 13px;
-            border-radius: 8px; font-size: 0.9rem; font-weight: 800;
-            cursor: pointer; transition: opacity .2s; letter-spacing: 0.3px;
+        .map-popup-btn:hover { background: var(--orange-dk); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            grid-column: 1/-1; text-align: center;
+            padding: 60px 20px; color: var(--gray2);
         }
-        .btn-submit:hover { opacity: 0.88; }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 14px; }
+        .empty-state p { font-size: 0.9rem; }
 
         /* ── FOOTER ── */
         footer {
-            background: #04040a; padding: 36px 50px;
+            background: var(--navy); color: rgba(255,255,255,0.5);
+            padding: 30px 50px;
             display: flex; justify-content: space-between; align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.05);
         }
-        .footer-logo { font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: 3px; }
-        .footer-logo span { color: #4ade80; }
-        .footer-links { display: flex; gap: 24px; list-style: none; }
-        .footer-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 0.78rem; transition: color .2s; }
-        .footer-links a:hover { color: rgba(255,255,255,0.75); }
-        .footer-copy { color: rgba(255,255,255,0.2); font-size: 0.72rem; }
+        .footer-logo { font-size: 1rem; font-weight: 900; color: #fff; letter-spacing: 2px; }
+        .footer-logo span { color: var(--blue); }
+        .footer-copy { font-size: 0.72rem; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .projects-map-row { grid-template-columns: 1fr; }
+            .map-container { position: static; }
+            #map { height: 400px; }
+        }
+        @media (max-width: 768px) {
+            nav { padding: 14px 20px; }
+            .hero { padding: 100px 20px 60px; flex-direction: column; }
+            .hero h1 { font-size: 2.4rem; }
+            .hero-visual { max-width: 100%; }
+            .section, .categories-section, .projects-section { padding: 60px 20px; }
+            .cat-grid { grid-template-columns: 1fr; }
+            .props-grid { grid-template-columns: 1fr; max-height: none; }
+            footer { flex-direction: column; gap: 10px; text-align: center; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- NAV -->
-    <nav>
-        <div class="logo">Costos&<span>Presupuestos</span></div>
-        <ul class="nav-links">
-            <li><a href="#" class="active">Inicio</a></li>
-            <li><a href="#features">Características</a></li>
-            <li><a href="#properties">Desarrollos</a></li>
-            <li><a href="#contact">Contacto</a></li>
-        </ul>
-        <div class="nav-actions">
-            <span class="nav-phone">+1 666 5401 544</span>
-            <a href="login.html" class="btn-nav btn-login">Iniciar sesión</a>
-            <a href="dashboard.html" class="btn-nav btn-dashboard">Dashboard</a>
-        </div>
-    </nav>
+<!-- NAV -->
+<nav id="mainNav">
+    <div class="logo">Costos&<span>Presupuestos</span></div>
+    <a href="login.html" class="btn-primary" style="font-size:0.82rem;padding:9px 22px;">Iniciar sesión</a>
+</nav>
 
-    <!-- HERO -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-shape-1"></div>
-        <div class="hero-shape-2">
-            <div class="mock-window">
-                <div class="mock-bar">
-                    <div class="mock-dot" style="background:#ef4444"></div>
-                    <div class="mock-dot" style="background:#f59e0b"></div>
-                    <div class="mock-dot" style="background:#4ade80"></div>
-                </div>
-                <div class="mock-line w80"></div>
-                <div class="mock-line w60"></div>
-                <div class="mock-line w40"></div>
-                <div class="mock-stat-row">
-                    <div class="mock-stat"></div>
-                    <div class="mock-stat" style="background:rgba(74,222,128,0.1); border-color:rgba(74,222,128,0.2)"></div>
-                    <div class="mock-stat"></div>
-                </div>
-            </div>
-            <div class="mock-window" style="opacity:0.6">
-                <div class="mock-line w60"></div>
-                <div class="mock-line w80"></div>
-                <div class="mock-line w40"></div>
-            </div>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><div class="badge-dot"></div>Sistema de Control Presupuestario</div>
+        <h1>Control de<br><em>Proyectos</em><br>en tiempo real</h1>
+        <p>Gestiona el presupuesto, avance y ejecución de todos tus proyectos inmobiliarios desde un solo lugar.</p>
+        <div class="hero-cta">
+            <a href="login.html" class="btn-primary">Acceder al sistema</a>
+            <a href="#proyectos" class="btn-secondary">Ver proyectos</a>
         </div>
-
-        <div class="hero-content">
-            <div class="hero-badge"><div class="badge-dot"></div>Proyecto Premium</div>
-            <h1>Greenfield<br><em>Residence</em></h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sit amet lorem lobortis velit rutrum ullamcorper.</p>
-            <div class="subscribe-form">
-                <input type="email" placeholder="Tu correo electrónico">
-                <button>&#8594;</button>
-            </div>
-            <a href="#features" class="btn-more">Más información</a>
-        </div>
-
         <div class="hero-stats">
-            <div>
-                <div class="stat-num">240+</div>
-                <div class="stat-label">Unidades vendidas</div>
+            <div><div class="stat-num">22</div><div class="stat-label">Proyectos activos</div></div>
+            <div><div class="stat-num">2</div><div class="stat-label">Empresas</div></div>
+            <div><div class="stat-num">91%</div><div class="stat-label">Avance promedio</div></div>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="hero-card">
+            <div class="hc-header">
+                <div class="hc-dot" style="background:#ef4444"></div>
+                <div class="hc-dot" style="background:#f59e0b"></div>
+                <div class="hc-dot" style="background:#10b981"></div>
+                <div class="hc-title" style="margin-left:6px">Control Presupuestario</div>
             </div>
-            <div>
-                <div class="stat-num">98%</div>
-                <div class="stat-label">Clientes satisfechos</div>
+            <div class="hc-stats">
+                <div class="hc-stat">
+                    <div class="hc-stat-val" style="color:var(--blue-dark)">162M</div>
+                    <div class="hc-stat-lbl">Presupuesto</div>
+                </div>
+                <div class="hc-stat">
+                    <div class="hc-stat-val" style="color:var(--orange)">129M</div>
+                    <div class="hc-stat-lbl">Ejecutado</div>
+                </div>
+                <div class="hc-stat">
+                    <div class="hc-stat-val" style="color:var(--green)">92%</div>
+                    <div class="hc-stat-lbl">Avance</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-num">12</div>
-                <div class="stat-label">Años de experiencia</div>
+            <div class="hc-bar-section">
+                <div class="hc-bar-row">
+                    <div class="hc-bar-name">Construcción</div>
+                    <div class="hc-bar-track"><div class="hc-bar-fill" style="width:93%;background:var(--blue)"></div></div>
+                    <div class="hc-bar-pct">93%</div>
+                </div>
+                <div class="hc-bar-row">
+                    <div class="hc-bar-name">Urbanización</div>
+                    <div class="hc-bar-track"><div class="hc-bar-fill" style="width:91%;background:var(--orange)"></div></div>
+                    <div class="hc-bar-pct">91%</div>
+                </div>
+                <div class="hc-bar-row">
+                    <div class="hc-bar-name">I.7a</div>
+                    <div class="hc-bar-track"><div class="hc-bar-fill" style="width:84%;background:var(--green)"></div></div>
+                    <div class="hc-bar-pct">84%</div>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- FEATURES -->
-    <section class="features" id="features">
-        <div class="section-tag">Por qué elegirnos</div>
-        <div class="section-heading">Características destacadas</div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="f-icon">🏗️</div>
-                <h3>Construcción Premium</h3>
-                <p>Materiales de primera calidad y procesos constructivos certificados en cada proyecto.</p>
-            </div>
-            <div class="feature-card">
-                <div class="f-icon">📍</div>
-                <h3>Ubicación Estratégica</h3>
-                <p>Desarrollos en las mejores zonas urbanas, residenciales y comerciales.</p>
-            </div>
-            <div class="feature-card">
-                <div class="f-icon">📊</div>
-                <h3>Gestión Transparente</h3>
-                <p>Control presupuestario en tiempo real a través de nuestro dashboard interactivo.</p>
-            </div>
-            <div class="feature-card">
-                <div class="f-icon">🔒</div>
-                <h3>Inversión Segura</h3>
-                <p>Respaldo financiero y legal sólido en todos y cada uno de nuestros proyectos.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROPERTIES -->
-    <section class="properties" id="properties">
+<!-- CATEGORÍAS -->
+<section class="categories-section" id="proyectos">
+    <div class="cat-header">
         <div class="section-tag">Nuestros desarrollos</div>
-        <div class="section-heading">Proyectos disponibles</div>
-        <div class="props-grid">
-            <div class="prop-card">
-                <div class="prop-img" style="background:linear-gradient(135deg,#1a3a6a,#0f2040)">
-                    🏢<span class="prop-badge">Disponible</span>
-                </div>
-                <div class="prop-info">
-                    <div class="prop-name">Greenfield Residence</div>
-                    <div class="prop-location">📍 Zona Norte, Ciudad</div>
-                    <div class="prop-price">$285,000</div>
-                    <div class="prop-details">
-                        <span class="prop-detail">🛏 3 hab.</span>
-                        <span class="prop-detail">🚿 2 baños</span>
-                        <span class="prop-detail">📐 120 m²</span>
-                    </div>
-                </div>
-            </div>
-            <div class="prop-card">
-                <div class="prop-img" style="background:linear-gradient(135deg,#2a1a5a,#1a0f3a)">
-                    🏬<span class="prop-badge" style="background:#6366f1;color:#fff">Preventa</span>
-                </div>
-                <div class="prop-info">
-                    <div class="prop-name">Sunset Tower</div>
-                    <div class="prop-location">📍 Centro Histórico</div>
-                    <div class="prop-price">$195,000</div>
-                    <div class="prop-details">
-                        <span class="prop-detail">🛏 2 hab.</span>
-                        <span class="prop-detail">🚿 1 baño</span>
-                        <span class="prop-detail">📐 85 m²</span>
-                    </div>
-                </div>
-            </div>
-            <div class="prop-card">
-                <div class="prop-img" style="background:linear-gradient(135deg,#0a3a2a,#0f2a1a)">
-                    🏡<span class="prop-badge" style="background:#10b981">Entrega inmediata</span>
-                </div>
-                <div class="prop-info">
-                    <div class="prop-name">Villa Esmeralda</div>
-                    <div class="prop-location">📍 Zona Residencial Sur</div>
-                    <div class="prop-price">$420,000</div>
-                    <div class="prop-details">
-                        <span class="prop-detail">🛏 4 hab.</span>
-                        <span class="prop-detail">🚿 3 baños</span>
-                        <span class="prop-detail">📐 200 m²</span>
-                    </div>
-                </div>
-            </div>
+        <div class="section-heading">Proyectos</div>
+        <p class="section-sub">Selecciona una categoría para explorar los proyectos disponibles y su ubicación en el mapa.</p>
+    </div>
+    <div class="cat-grid">
+        <div class="cat-card active" data-cat="todos" onclick="selectCategory(this, 'todos')">
+            <div class="cat-icon">🗂️</div>
+            <div class="cat-name">Todos</div>
+            <div class="cat-count">22 proyectos</div>
         </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section class="contact" id="contact">
-        <div class="section-tag">Contáctanos</div>
-        <div class="section-heading">Inicia tu nuevo camino</div>
-        <div class="contact-grid">
-            <div class="contact-intro">
-                <h3>Descubre tu hogar perfecto</h3>
-                <p>Nuestro equipo de especialistas está listo para ayudarte a encontrar la propiedad ideal según tus necesidades y presupuesto.</p>
-                <div class="c-detail"><div class="c-icon">📞</div><span>+1 666 5401 544</span></div>
-                <div class="c-detail"><div class="c-icon">✉️</div><span>info@rv4.com</span></div>
-                <div class="c-detail"><div class="c-icon">📍</div><span>Av. Principal 123, Ciudad</span></div>
-            </div>
-            <div class="contact-form">
-                <div class="form-row">
-                    <div class="form-field">
-                        <label>Nombre completo *</label>
-                        <input type="text" placeholder="Juan Pérez">
-                    </div>
-                    <div class="form-field">
-                        <label>Correo electrónico *</label>
-                        <input type="email" placeholder="juan@email.com">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-field">
-                        <label>Teléfono *</label>
-                        <input type="tel" placeholder="+1 555 0000">
-                    </div>
-                    <div class="form-field">
-                        <label>Estado / Provincia</label>
-                        <input type="text" placeholder="Tu ubicación">
-                    </div>
-                </div>
-                <div class="form-field">
-                    <label>Mensaje</label>
-                    <textarea placeholder="¿En qué podemos ayudarte?"></textarea>
-                </div>
-                <button class="btn-submit">Solicitar información</button>
-            </div>
+        <div class="cat-card" data-cat="casas" onclick="selectCategory(this, 'casas')">
+            <div class="cat-icon">🏠</div>
+            <div class="cat-name">Casas</div>
+            <div class="cat-count">8 proyectos</div>
         </div>
-    </section>
+        <div class="cat-card" data-cat="lotes" onclick="selectCategory(this, 'lotes')">
+            <div class="cat-icon">🌿</div>
+            <div class="cat-name">Lotes</div>
+            <div class="cat-count">13 proyectos</div>
+        </div>
+        <div class="cat-card" data-cat="edificios" onclick="selectCategory(this, 'edificios')">
+            <div class="cat-icon">🏢</div>
+            <div class="cat-name">Edificios</div>
+            <div class="cat-count">1 proyecto</div>
+        </div>
+    </div>
+</section>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-logo">Costos&<span>Presupuestos</span></div>
-        <ul class="footer-links">
-            <li><a href="#">Inicio</a></li>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="login.html">Acceso</a></li>
-            <li><a href="#contact">Contacto</a></li>
-        </ul>
-        <div class="footer-copy">© 2026 Costos&Presupuestos. Todos los derechos reservados.</div>
-    </footer>
+<!-- PROYECTOS EN EJECUCIÓN + MAPA -->
+<section class="projects-section">
+    <div class="projects-header">
+        <div>
+            <div class="section-tag">Seguimiento</div>
+            <div class="section-heading">Proyectos en Ejecución</div>
+        </div>
+        <div class="active-cat-pill" id="activePill">
+            <span>🗂️</span> <span id="pillText">Todos los proyectos</span>
+        </div>
+    </div>
 
+    <div class="projects-map-row">
+        <!-- Tarjetas de proyectos -->
+        <div class="props-grid" id="propsGrid"></div>
+
+        <!-- Mapa Leaflet -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-logo">Costos&<span>Presupuestos</span></div>
+    <div class="footer-copy">© 2026 Costos&Presupuestos. Todos los derechos reservados.</div>
+</footer>
+
+<script>
+    // ── NAV SCROLL ────────────────────────────────────────────────────────────
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    // ── DATA ─────────────────────────────────────────────────────────────────
+    const PROJECTS = [
+        // CASAS
+        { id:'providencia',        cat:'casas',    name:'Providencia',             icon:'🏠', bg:'#dbeafe', loc:'Guatemala, GT',  price:'Q 1,250,000', hab:'3', banos:'2', m2:'145', lat:14.6400, lng:-90.5100 },
+        { id:'armonia',            cat:'casas',    name:'Armonía',                 icon:'🏡', bg:'#dcfce7', loc:'Guatemala, GT',  price:'Q 980,000',   hab:'3', banos:'2', m2:'130', lat:14.6200, lng:-90.5300 },
+        { id:'condadosantaelena',  cat:'casas',    name:'Condado Santa Elena',     icon:'🏘️', bg:'#fef3c7', loc:'Santa Elena, PT', price:'Q 750,000',  hab:'2', banos:'2', m2:'110', lat:16.9200, lng:-89.8900 },
+        { id:'reservadelbosque',   cat:'casas',    name:'Reserva del Bosque',      icon:'🌲', bg:'#d1fae5', loc:'Villa Nueva, GT', price:'Q 1,100,000', hab:'4', banos:'3', m2:'180', lat:14.5800, lng:-90.6200 },
+        { id:'bosquesdejalapa',    cat:'casas',    name:'Bosques de Jalapa',       icon:'🏠', bg:'#ede9fe', loc:'Jalapa, JA',     price:'Q 680,000',   hab:'3', banos:'2', m2:'120', lat:14.6340, lng:-89.9880 },
+        { id:'serenidad',          cat:'casas',    name:'La Serenidad / Querencia',icon:'🌄', bg:'#fee2e2', loc:'Guatemala, GT',  price:'Q 1,450,000', hab:'4', banos:'3', m2:'200', lat:14.6100, lng:-90.5800 },
+        { id:'bosquesdepinula',    cat:'casas',    name:'Bosques de Pinula',       icon:'🌳', bg:'#ecfdf5', loc:'San José Pinula', price:'Q 890,000',  hab:'3', banos:'2', m2:'135', lat:14.5600, lng:-90.4700 },
+        { id:'bosquessantaelena',  cat:'casas',    name:'Bosques de Santa Elena',  icon:'🏡', bg:'#f0fdf4', loc:'Santa Elena, PT', price:'Q 720,000',  hab:'3', banos:'2', m2:'125', lat:14.6500, lng:-90.5200 },
+        // LOTES
+        { id:'condadolaceiba',     cat:'lotes',    name:'Condado La Ceiba',        icon:'🌿', bg:'#ecfdf5', loc:'Guatemala, GT',  price:'Q 320,000',   hab:'—', banos:'—', m2:'300', lat:14.6800, lng:-90.4800 },
+        { id:'haciendajumay',      cat:'lotes',    name:'Hacienda Jumay',          icon:'🌾', bg:'#fef9c3', loc:'Jalapa, JA',     price:'Q 280,000',   hab:'—', banos:'—', m2:'450', lat:14.6340, lng:-89.9780 },
+        { id:'condadojutiapa',     cat:'lotes',    name:'Condado Jutiapa',         icon:'🌿', bg:'#d1fae5', loc:'Jutiapa, JU',   price:'Q 240,000',   hab:'—', banos:'—', m2:'380', lat:14.2900, lng:-89.9000 },
+        { id:'condadozacapa',      cat:'lotes',    name:'Condado Zacapa (Oasis)',  icon:'☀️', bg:'#fef3c7', loc:'Zacapa, ZA',    price:'Q 260,000',   hab:'—', banos:'—', m2:'420', lat:14.9700, lng:-89.5300 },
+        { id:'haciendosol',        cat:'lotes',    name:'Hacienda Sol',            icon:'🌻', bg:'#fffbeb', loc:'Guatemala, GT',  price:'Q 310,000',   hab:'—', banos:'—', m2:'360', lat:14.7000, lng:-90.4500 },
+        { id:'clubcampestrejumay', cat:'lotes',    name:'Club Campestre Jumay',    icon:'⛳', bg:'#ecfdf5', loc:'Jalapa, JA',    price:'Q 350,000',   hab:'—', banos:'—', m2:'500', lat:14.6200, lng:-89.9700 },
+        { id:'clubbosque',         cat:'lotes',    name:'Club del Bosque',         icon:'🌲', bg:'#d1fae5', loc:'Villa Nueva, GT', price:'Q 290,000',  hab:'—', banos:'—', m2:'400', lat:14.5900, lng:-90.6000 },
+        { id:'haciendastlucia',    cat:'lotes',    name:'Hacienda Santa Lucía',    icon:'🌄', bg:'#fce7f3', loc:'Escuintla, ES',  price:'Q 275,000',   hab:'—', banos:'—', m2:'480', lat:14.3500, lng:-90.6600 },
+        { id:'celajetecpan',       cat:'lotes',    name:'Celajes de Tecpán',       icon:'🏔️', bg:'#e0e7ff', loc:'Tecpán, CM',    price:'Q 230,000',   hab:'—', banos:'—', m2:'350', lat:14.7700, lng:-91.0000 },
+        { id:'arbolerasantaelena', cat:'lotes',    name:'Arbolera de Santa Elena', icon:'🌳', bg:'#ecfdf5', loc:'Santa Elena, PT', price:'Q 210,000',  hab:'—', banos:'—', m2:'320', lat:16.9200, lng:-89.8700 },
+        { id:'haciendacafetal',    cat:'lotes',    name:'Hacienda El Cafetal',     icon:'☕', bg:'#fef3c7', loc:'Amatitlán, GT',  price:'Q 295,000',   hab:'—', banos:'—', m2:'440', lat:14.4500, lng:-90.7500 },
+        { id:'progresojutiapa',    cat:'lotes',    name:'Club Progreso Jutiapa',   icon:'🏡', bg:'#f0fdf4', loc:'Jutiapa, JU',   price:'Q 220,000',   hab:'—', banos:'—', m2:'390', lat:14.2800, lng:-89.9100 },
+        { id:'canadasjalapa',      cat:'lotes',    name:'Cañadas de Jalapa',       icon:'🏞️', bg:'#e0f2fe', loc:'Jalapa, JA',    price:'Q 245,000',   hab:'—', banos:'—', m2:'410', lat:14.6200, lng:-89.9600 },
+        // EDIFICIOS
+        { id:'salucentrozacapa',   cat:'edificios',name:'Salucentro Zacapa',       icon:'🏥', bg:'#ede9fe', loc:'Zacapa, ZA',    price:'Q 8,500,000', hab:'—', banos:'—', m2:'2500', lat:14.9750, lng:-89.5350 },
+    ];
+
+    const CAT_LABELS = { todos:'Todos los proyectos', casas:'Casas', lotes:'Lotes', edificios:'Edificios' };
+    const CAT_ICONS  = { todos:'🗂️', casas:'🏠', lotes:'🌿', edificios:'🏢' };
+
+    // ── MAPA ─────────────────────────────────────────────────────────────────
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: true })
+        .setView([14.7000, -90.3000], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        maxZoom: 18
+    }).addTo(map);
+
+    // Custom marker icon factory
+    function makeIcon(color) {
+        return L.divIcon({
+            className: '',
+            html: `<div style="
+                width:32px; height:32px; border-radius:50% 50% 50% 0;
+                background:${color}; border:3px solid #fff;
+                box-shadow:0 3px 10px rgba(0,0,0,0.25);
+                transform:rotate(-45deg);
+            "></div>`,
+            iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34]
+        });
+    }
+
+    const CAT_COLORS = { casas:'#0ea5e9', lotes:'#10b981', edificios:'#f97316' };
+
+    let markers = {};
+
+    function buildPopup(p) {
+        const catLabel = { casas:'Casa', lotes:'Lote', edificios:'Edificio' }[p.cat];
+        return `<div>
+            <div class="map-popup-name">${p.name}</div>
+            <div class="map-popup-cat">${catLabel} · ${p.loc}</div>
+            <a href="dashboard.html?project=${encodeURIComponent(p.name)}" class="map-popup-btn">Ver dashboard →</a>
+        </div>`;
+    }
+
+    PROJECTS.forEach(p => {
+        const marker = L.marker([p.lat, p.lng], { icon: makeIcon(CAT_COLORS[p.cat]) })
+            .bindPopup(buildPopup(p));
+        marker.addTo(map);
+        markers[p.id] = { marker, cat: p.cat };
+    });
+
+    // ── TARJETAS ─────────────────────────────────────────────────────────────
+    function renderCards(cat) {
+        const grid = document.getElementById('propsGrid');
+        const filtered = cat === 'todos' ? PROJECTS : PROJECTS.filter(p => p.cat === cat);
+
+        grid.innerHTML = '';
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>No hay proyectos en esta categoría.</p></div>`;
+            return;
+        }
+
+        filtered.forEach((p, i) => {
+            const card = document.createElement('a');
+            card.href = `dashboard.html?project=${encodeURIComponent(p.name)}`;
+            card.className = 'prop-card';
+            card.style.animationDelay = `${i * 0.06}s`;
+
+            const showHab = p.hab !== '—';
+            card.innerHTML = `
+                <div class="prop-img" style="background:${p.bg}">
+                    ${p.icon}
+                </div>
+                <div class="prop-info">
+                    <div class="prop-name">${p.name}</div>
+                    <div class="prop-location">📍 ${p.loc}</div>
+                    <div class="prop-price">${p.price}</div>
+                    <div class="prop-details">
+                        ${showHab ? `<span class="prop-detail">🛏 ${p.hab} hab.</span><span class="prop-detail">🚿 ${p.banos} baños</span>` : ''}
+                        <span class="prop-detail">📐 ${p.m2} m²</span>
+                    </div>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // ── FILTRO MAPA ───────────────────────────────────────────────────────────
+    function filterMarkers(cat) {
+        Object.values(markers).forEach(({ marker, cat: mcat }) => {
+            if (cat === 'todos' || mcat === cat) {
+                if (!map.hasLayer(marker)) map.addLayer(marker);
+            } else {
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+
+        // Ajustar vista del mapa
+        const visible = Object.values(markers)
+            .filter(({ cat: mcat }) => cat === 'todos' || mcat === cat)
+            .map(({ marker }) => marker.getLatLng());
+
+        if (visible.length > 0) {
+            const group = L.featureGroup(Object.values(markers)
+                .filter(({ cat: mcat }) => cat === 'todos' || mcat === cat)
+                .map(({ marker }) => marker));
+            map.fitBounds(group.getBounds().pad(0.2));
+        }
+    }
+
+    // ── SELECCIÓN DE CATEGORÍA ────────────────────────────────────────────────
+    function selectCategory(el, cat) {
+        document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+
+        document.getElementById('pillText').textContent = CAT_LABELS[cat];
+        const pill = document.getElementById('activePill');
+        pill.querySelector('span').textContent = CAT_ICONS[cat];
+
+        // Scroll suave a la sección de proyectos
+        document.querySelector('.projects-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        renderCards(cat);
+        filterMarkers(cat);
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    renderCards('todos');
+
+    // Animación de las barras del hero al cargar
+    window.addEventListener('load', () => {
+        document.querySelectorAll('.hc-bar-fill').forEach(bar => {
+            const w = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => { bar.style.width = w; }, 500);
+        });
+    });
+</script>
 </body>
 </html>

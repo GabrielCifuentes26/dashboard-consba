@@ -6,289 +6,337 @@
     <title>Admin — Gestión de Usuarios</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #f0f4f8;
+            --surface:   #ffffff;
+            --navy:      #0f172a;
+            --navy2:     #1e293b;
+            --gray:      #64748b;
+            --gray2:     #94a3b8;
+            --border:    #e2e8f0;
+            --blue:      #0ea5e9;
+            --blue-dark: #0284c7;
+            --orange:    #f97316;
+            --green:     #10b981;
+            --amber:     #f59e0b;
+            --red:       #ef4444;
+            --purple:    #8b5cf6;
+            --shadow:    0 2px 12px rgba(15,23,42,0.08);
+            --shadow-lg: 0 8px 32px rgba(15,23,42,0.12);
+        }
 
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: #0f172a; color: #e2e8f0;
+            background: var(--bg); color: var(--navy);
             font-size: 13px; display: flex; min-height: 100vh;
         }
 
         /* ── SIDEBAR ── */
         .sidebar {
-            width: 54px; background: #0a0f1e; flex-shrink: 0;
+            width: 58px; background: var(--navy); flex-shrink: 0;
             display: flex; flex-direction: column; align-items: center;
-            padding: 16px 0; gap: 8px;
+            padding: 18px 0; gap: 6px;
             border-right: 1px solid rgba(255,255,255,0.06);
         }
         .s-logo {
-            width: 36px; height: 36px; border-radius: 8px;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
             display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 11px; color: #fff; margin-bottom: 14px;
+            font-weight: 900; font-size: 10px; color: #fff; margin-bottom: 16px;
         }
         .s-icon {
-            width: 36px; height: 36px; border-radius: 8px;
+            width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            color: #475569; font-size: 14px; cursor: pointer;
+            color: rgba(255,255,255,0.35); font-size: 15px; cursor: pointer;
             transition: background .15s, color .15s; text-decoration: none;
         }
-        .s-icon:hover { background: #1e293b; color: #cbd5e1; }
-        .s-icon.active { background: #1e293b; color: #6366f1; }
+        .s-icon:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+        .s-icon.active { background: rgba(14,165,233,0.2); color: var(--blue); }
 
         /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
 
         /* ── TOPBAR ── */
         .topbar {
-            background: #0a0f1e; border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding: 10px 20px; display: flex; align-items: center;
-            justify-content: space-between; flex-shrink: 0;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 12px 22px; display: flex; align-items: center;
+            justify-content: space-between; flex-shrink: 0; box-shadow: var(--shadow);
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
         .back-link {
-            color: #475569; text-decoration: none; font-size: 0.72rem;
-            display: flex; align-items: center; gap: 5px; transition: color .2s;
+            color: var(--gray); text-decoration: none; font-size: 0.73rem;
+            display: flex; align-items: center; gap: 5px; transition: color .2s; font-weight: 500;
         }
-        .back-link:hover { color: #94a3b8; }
-        .topbar-brand { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
-        .topbar-brand span { color: #6366f1; }
+        .back-link:hover { color: var(--blue); }
+        .topbar-brand { font-size: 1rem; font-weight: 900; color: var(--navy); letter-spacing: 0.5px; }
+        .topbar-brand span { color: var(--blue); }
         .admin-badge {
-            background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3);
-            color: #818cf8; font-size: 0.62rem; font-weight: 700;
-            padding: 3px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+            background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);
+            color: var(--purple); font-size: 0.68rem; font-weight: 700;
+            padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .topbar-right { display: flex; align-items: center; gap: 10px; }
         .user-chip {
             display: flex; align-items: center; gap: 8px;
-            background: #1e293b; border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px; padding: 4px 12px 4px 4px;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 20px; padding: 4px 14px 4px 4px;
         }
         .user-avatar {
-            width: 26px; height: 26px; border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.65rem; font-weight: 700; color: #fff;
+            font-size: 0.68rem; font-weight: 700; color: #fff;
         }
-        #user-name { font-size: 0.72rem; color: #94a3b8; }
+        #user-name { font-size: 0.73rem; color: var(--gray); font-weight: 500; }
         .btn-logout {
-            background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
-            color: #ef4444; padding: 4px 12px; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 600; cursor: pointer;
+            background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.18);
+            color: var(--red); padding: 5px 13px; border-radius: 7px;
+            font-size: 0.72rem; font-weight: 700; cursor: pointer;
             font-family: inherit; transition: background .2s;
         }
-        .btn-logout:hover { background: rgba(239,68,68,0.2); }
+        .btn-logout:hover { background: rgba(239,68,68,0.14); }
 
         /* ── CONTENT ── */
-        .content { padding: 20px; flex: 1; }
+        .content { padding: 22px; flex: 1; }
 
         /* ── STATS ── */
-        .stats-row { display: flex; gap: 12px; margin-bottom: 20px; }
+        .stats-row { display: flex; gap: 14px; margin-bottom: 22px; }
         .stat-card {
-            flex: 1; background: #1e293b; border-radius: 10px;
-            padding: 16px 20px; border-top: 3px solid #334155;
-            transition: transform .2s;
+            flex: 1; background: var(--surface); border-radius: 12px;
+            padding: 18px 20px; border: 1px solid var(--border); border-left-width: 3px;
+            transition: transform .2s, box-shadow .2s; box-shadow: var(--shadow);
         }
-        .stat-card:hover { transform: translateY(-2px); }
-        .stat-card.c1 { border-top-color: #6366f1; }
-        .stat-card.c2 { border-top-color: #10b981; }
-        .stat-card.c3 { border-top-color: #f59e0b; }
-        .stat-card.c4 { border-top-color: #0ea5e9; }
-        .stat-label { font-size: 0.62rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-        .stat-value { font-size: 1.8rem; font-weight: 800; color: #f1f5f9; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-card.c1 { border-left-color: var(--blue); }
+        .stat-card.c2 { border-left-color: var(--green); }
+        .stat-card.c3 { border-left-color: var(--amber); }
+        .stat-card.c4 { border-left-color: var(--orange); }
+        .stat-label { font-size: 0.65rem; color: var(--gray2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; font-weight: 600; }
+        .stat-value { font-size: 2rem; font-weight: 900; color: var(--navy); }
+
+        /* ── FILTERS ── */
+        .filters-row {
+            display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border);
+            background: var(--surface); color: var(--gray); font-size: 0.75rem;
+            font-weight: 600; cursor: pointer; font-family: inherit;
+            transition: all .2s;
+        }
+        .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+        .filter-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
 
         /* ── SECTION HEADER ── */
         .section-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
         }
-        .section-title { font-size: 0.9rem; font-weight: 700; color: #f1f5f9; }
-        .section-sub { font-size: 0.7rem; color: #475569; margin-top: 2px; }
+        .section-title { font-size: 0.95rem; font-weight: 800; color: var(--navy); }
+        .section-sub   { font-size: 0.72rem; color: var(--gray2); margin-top: 2px; }
+        .section-actions { display: flex; gap: 10px; align-items: center; }
 
         .search-box {
-            background: #1e293b; border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 7px; padding: 7px 14px; color: #e2e8f0;
-            font-size: 0.78rem; font-family: inherit; outline: none;
-            width: 220px; transition: border-color .2s;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 9px; padding: 8px 16px; color: var(--navy);
+            font-size: 0.8rem; font-family: inherit; outline: none;
+            width: 240px; transition: border-color .2s, box-shadow .2s;
         }
-        .search-box:focus { border-color: rgba(99,102,241,0.4); }
-        .search-box::placeholder { color: #334155; }
+        .search-box:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+        .search-box::placeholder { color: var(--gray2); }
 
         .btn-add {
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            color: #fff; border: none; padding: 8px 18px;
-            border-radius: 7px; font-size: 0.78rem; font-weight: 700;
-            cursor: pointer; font-family: inherit; transition: opacity .2s;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dk, #ea6c0a));
+            color: #fff; border: none; padding: 9px 20px;
+            border-radius: 9px; font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; font-family: inherit; transition: opacity .2s, transform .15s;
             display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 3px 12px rgba(249,115,22,0.3);
         }
-        .btn-add:hover { opacity: 0.88; }
+        .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
 
         /* ── TABLE ── */
         .table-wrap {
-            background: #1e293b; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.06); overflow: hidden;
+            background: var(--surface); border-radius: 12px;
+            border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow);
         }
-        table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-        thead tr { background: #162032; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        thead tr { background: var(--bg); }
         th {
-            padding: 11px 16px; text-align: left; font-weight: 600;
-            color: #7dd3fc; white-space: nowrap;
-            border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.68rem;
-            text-transform: uppercase; letter-spacing: 0.6px;
+            padding: 12px 16px; text-align: left; font-weight: 700;
+            color: var(--navy2); white-space: nowrap;
+            border-bottom: 1px solid var(--border); font-size: 0.68rem;
+            text-transform: uppercase; letter-spacing: 0.7px;
         }
-        tbody tr {
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            transition: background .15s;
-        }
+        tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
         tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: #243048; }
-        td { padding: 11px 16px; color: #94a3b8; vertical-align: middle; }
-        td:first-child { color: #e2e8f0; font-weight: 500; }
+        tbody tr:hover { background: rgba(14,165,233,0.03); }
+        td { padding: 12px 16px; color: var(--gray); vertical-align: middle; }
+        td:first-child { color: var(--navy); font-weight: 500; }
 
         .user-cell { display: flex; align-items: center; gap: 10px; }
         .u-avatar {
-            width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.72rem; font-weight: 700; color: #fff;
+            font-size: 0.75rem; font-weight: 700; color: #fff;
         }
-        .u-name { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
-        .u-email { font-size: 0.7rem; color: #475569; margin-top: 1px; }
+        .u-name  { font-size: 0.84rem; font-weight: 700; color: var(--navy); }
+        .u-email { font-size: 0.7rem; color: var(--gray2); margin-top: 1px; }
 
         .role-badge {
-            display: inline-block; padding: 3px 10px; border-radius: 10px;
-            font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .role-admin   { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
-        .role-usuario { background: rgba(16,185,129,0.1);  color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+        .role-admin   { background: rgba(139,92,246,0.08); color: var(--purple); border: 1px solid rgba(139,92,246,0.2); }
+        .role-usuario { background: rgba(16,185,129,0.08); color: var(--green);  border: 1px solid rgba(16,185,129,0.2); }
+
+        .empresa-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .emp-rv4    { background: rgba(14,165,233,0.08); color: var(--blue-dark); border: 1px solid rgba(14,165,233,0.2); }
+        .emp-consba { background: rgba(249,115,22,0.08); color: var(--orange);    border: 1px solid rgba(249,115,22,0.2); }
+        .emp-ambas  { background: rgba(15,23,42,0.06);   color: var(--navy2);     border: 1px solid var(--border); }
 
         .actions { display: flex; gap: 6px; }
         .btn-edit, .btn-del {
-            padding: 5px 12px; border-radius: 6px; border: none;
-            font-size: 0.7rem; font-weight: 600; cursor: pointer;
+            padding: 5px 14px; border-radius: 7px; border: none;
+            font-size: 0.72rem; font-weight: 700; cursor: pointer;
             font-family: inherit; transition: background .15s;
         }
-        .btn-edit { background: rgba(99,102,241,0.12); color: #818cf8; }
-        .btn-edit:hover { background: rgba(99,102,241,0.25); }
-        .btn-del  { background: rgba(239,68,68,0.1); color: #f87171; }
-        .btn-del:hover  { background: rgba(239,68,68,0.2); }
+        .btn-edit { background: rgba(14,165,233,0.08); color: var(--blue-dark); }
+        .btn-edit:hover { background: rgba(14,165,233,0.18); }
+        .btn-del  { background: rgba(239,68,68,0.07); color: var(--red); }
+        .btn-del:hover  { background: rgba(239,68,68,0.16); }
 
-        .empty-state {
-            text-align: center; padding: 50px 20px; color: #334155;
-        }
-        .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
-        .empty-text { font-size: 0.85rem; }
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--gray2); }
+        .empty-icon  { font-size: 2.5rem; margin-bottom: 12px; }
+        .empty-text  { font-size: 0.88rem; }
 
         /* ── MODAL ── */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            position: fixed; inset: 0; background: rgba(15,23,42,0.4);
             display: none; align-items: center; justify-content: center;
-            z-index: 1000; backdrop-filter: blur(4px);
+            z-index: 1000; backdrop-filter: blur(6px);
         }
         .modal-overlay.open { display: flex; }
         .modal {
-            background: #1e293b; border-radius: 14px; padding: 28px;
-            width: 420px; max-width: 95vw;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            background: var(--surface); border-radius: 18px; padding: 32px;
+            width: 460px; max-width: 95vw;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
         }
+        @keyframes modalIn { from { opacity:0; transform:scale(.92) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
         .modal-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 22px;
+            margin-bottom: 24px;
         }
-        .modal-title { font-size: 1rem; font-weight: 700; color: #f1f5f9; }
+        .modal-title { font-size: 1.1rem; font-weight: 800; color: var(--navy); }
         .modal-close {
-            width: 28px; height: 28px; border-radius: 6px; border: none;
-            background: rgba(255,255,255,0.06); color: #64748b;
+            width: 30px; height: 30px; border-radius: 8px; border: none;
+            background: var(--bg); color: var(--gray);
             cursor: pointer; font-size: 1rem; display: flex;
             align-items: center; justify-content: center; transition: background .15s;
         }
-        .modal-close:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+        .modal-close:hover { background: var(--border); color: var(--navy); }
 
-        .form-grid { display: flex; flex-direction: column; gap: 14px; }
-        .form-field { display: flex; flex-direction: column; gap: 5px; }
-        .form-field label { font-size: 0.68rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; }
+        .form-grid { display: flex; flex-direction: column; gap: 16px; }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label {
+            font-size: 0.7rem; font-weight: 700; color: var(--navy2);
+            text-transform: uppercase; letter-spacing: 0.6px;
+        }
         .form-field input, .form-field select {
-            background: #0f172a; border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px; color: #e2e8f0; padding: 10px 14px;
-            font-size: 0.85rem; font-family: inherit; outline: none;
-            transition: border-color .2s;
+            background: var(--bg); border: 2px solid var(--border);
+            border-radius: 9px; color: var(--navy); padding: 11px 14px;
+            font-size: 0.88rem; font-family: inherit; outline: none;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .form-field input:focus, .form-field select:focus { border-color: rgba(99,102,241,0.4); }
-        .form-field input::placeholder { color: #334155; }
-        .form-field select option { background: #1e293b; }
-        .form-hint { font-size: 0.65rem; color: #334155; margin-top: 2px; }
+        .form-field input:focus, .form-field select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+        }
+        .form-field input::placeholder { color: var(--gray2); }
+        .form-hint { font-size: 0.66rem; color: var(--gray2); margin-top: 2px; }
 
-        .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
         .btn-cancel {
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-            color: #64748b; padding: 10px; border-radius: 8px;
-            font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit;
+            flex: 1; background: var(--bg); border: 1px solid var(--border);
+            color: var(--gray); padding: 11px; border-radius: 9px;
+            font-size: 0.84rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            transition: background .15s;
         }
-        .btn-cancel:hover { background: rgba(255,255,255,0.08); }
+        .btn-cancel:hover { background: var(--border); }
         .btn-save {
-            flex: 2; background: linear-gradient(135deg, #6366f1, #4f46e5);
-            border: none; color: #fff; padding: 10px;
-            border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+            flex: 2; background: linear-gradient(135deg, var(--orange), #ea6c0a);
+            border: none; color: #fff; padding: 11px;
+            border-radius: 9px; font-size: 0.84rem; font-weight: 800;
             cursor: pointer; font-family: inherit; transition: opacity .2s;
+            box-shadow: 0 3px 12px rgba(249,115,22,0.3);
         }
-        .btn-save:hover { opacity: 0.88; }
-        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
         /* ── TOAST ── */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
-            background: #1e293b; border-radius: 10px; padding: 12px 18px;
+            background: var(--surface); border-radius: 12px; padding: 13px 20px;
             display: flex; align-items: center; gap: 10px;
-            font-size: 0.82rem; color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            font-size: 0.84rem; color: var(--navy);
+            border: 1px solid var(--border); box-shadow: var(--shadow-lg);
             transform: translateY(100px); opacity: 0;
             transition: transform .3s, opacity .3s; z-index: 2000;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { border-left: 3px solid #10b981; }
-        .toast.error   { border-left: 3px solid #ef4444; }
+        .toast.success { border-left: 3px solid var(--green); }
+        .toast.error   { border-left: 3px solid var(--red); }
 
         /* ── CONFIRM DIALOG ── */
         .confirm-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            position: fixed; inset: 0; background: rgba(15,23,42,0.4);
             display: none; align-items: center; justify-content: center;
-            z-index: 2000;
+            z-index: 2000; backdrop-filter: blur(4px);
         }
         .confirm-overlay.open { display: flex; }
         .confirm-box {
-            background: #1e293b; border-radius: 12px; padding: 24px;
-            width: 340px; border: 1px solid rgba(255,255,255,0.08);
-            text-align: center;
+            background: var(--surface); border-radius: 16px; padding: 28px;
+            width: 360px; border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg); text-align: center;
+            animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
         }
-        .confirm-icon { font-size: 2rem; margin-bottom: 12px; }
-        .confirm-title { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
-        .confirm-sub { font-size: 0.78rem; color: #64748b; margin-bottom: 20px; }
-        .confirm-btns { display: flex; gap: 10px; }
+        .confirm-icon  { font-size: 2.5rem; margin-bottom: 14px; }
+        .confirm-title { font-size: 1rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+        .confirm-sub   { font-size: 0.8rem; color: var(--gray); margin-bottom: 22px; line-height: 1.6; }
+        .confirm-btns  { display: flex; gap: 10px; }
         .confirm-cancel {
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-            color: #64748b; padding: 9px; border-radius: 7px;
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit;
+            flex: 1; background: var(--bg); border: 1px solid var(--border);
+            color: var(--gray); padding: 10px; border-radius: 9px;
+            font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit;
         }
         .confirm-del {
-            flex: 1; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.25);
-            color: #f87171; padding: 9px; border-radius: 7px;
-            font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            flex: 1; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+            color: var(--red); padding: 10px; border-radius: 9px;
+            font-size: 0.82rem; font-weight: 800; cursor: pointer; font-family: inherit;
             transition: background .15s;
         }
-        .confirm-del:hover { background: rgba(239,68,68,0.3); }
+        .confirm-del:hover { background: rgba(239,68,68,0.18); }
     </style>
 </head>
 <body>
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <div class="s-logo">DB</div>
-    <a href="index.html"      class="s-icon" title="Inicio">⌂</a>
-    <a href="dashboard.html"  class="s-icon" title="Dashboard">▦</a>
+    <div class="s-logo">C&P</div>
+    <a href="index.html"     class="s-icon" title="Inicio">⌂</a>
+    <a href="dashboard.html" class="s-icon" title="Dashboard">▦</a>
     <div class="s-icon active" title="Admin">◈</div>
 </div>
 
@@ -332,17 +380,25 @@
             </div>
             <div class="stat-card c4">
                 <div class="stat-label">Último registro</div>
-                <div class="stat-value" id="stat-last" style="font-size:0.85rem;padding-top:6px">—</div>
+                <div class="stat-value" id="stat-last" style="font-size:0.9rem;padding-top:8px">—</div>
             </div>
+        </div>
+
+        <!-- Filtros por empresa -->
+        <div class="filters-row">
+            <button class="filter-btn active" onclick="filterEmpresa(this,'todos')">Todos</button>
+            <button class="filter-btn" onclick="filterEmpresa(this,'RV4')">RV4</button>
+            <button class="filter-btn" onclick="filterEmpresa(this,'CONSBA')">CONSBA</button>
+            <button class="filter-btn" onclick="filterEmpresa(this,'Ambas')">Ambas empresas</button>
         </div>
 
         <!-- Users Table -->
         <div class="section-header">
             <div>
                 <div class="section-title">Gestión de Usuarios</div>
-                <div class="section-sub">Agrega, edita o elimina usuarios del sistema</div>
+                <div class="section-sub">Agrega, edita o elimina usuarios. Asigna rol y empresa por persona.</div>
             </div>
-            <div style="display:flex;gap:10px;align-items:center">
+            <div class="section-actions">
                 <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar usuario...">
                 <button class="btn-add" onclick="openModal()">
                     <span>+</span> Agregar usuario
@@ -355,6 +411,7 @@
                 <thead>
                     <tr>
                         <th>Usuario</th>
+                        <th>Empresa</th>
                         <th>Rol</th>
                         <th>Creado</th>
                         <th>Acciones</th>
@@ -362,7 +419,7 @@
                 </thead>
                 <tbody id="usersBody">
                     <tr>
-                        <td colspan="4">
+                        <td colspan="5">
                             <div class="empty-state">
                                 <div class="empty-icon">⏳</div>
                                 <div class="empty-text">Cargando usuarios...</div>
@@ -385,25 +442,37 @@
         </div>
         <div class="form-grid">
             <input type="hidden" id="editId">
-            <div class="form-field">
-                <label>Nombre completo *</label>
-                <input type="text" id="fNombre" placeholder="Ej. Juan Pérez">
-            </div>
-            <div class="form-field">
-                <label>Correo electrónico *</label>
-                <input type="email" id="fCorreo" placeholder="correo@ejemplo.com">
+            <div class="form-row-2">
+                <div class="form-field">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="fNombre" placeholder="Ej. Juan Pérez">
+                </div>
+                <div class="form-field">
+                    <label>Correo electrónico *</label>
+                    <input type="email" id="fCorreo" placeholder="correo@ejemplo.com">
+                </div>
             </div>
             <div class="form-field" id="passField">
                 <label>Contraseña *</label>
                 <input type="password" id="fPass" placeholder="Mínimo 6 caracteres">
                 <div class="form-hint" id="passHint">Requerida para crear la cuenta de acceso</div>
             </div>
-            <div class="form-field">
-                <label>Rol</label>
-                <select id="fRol">
-                    <option value="usuario">Usuario</option>
-                    <option value="admin">Administrador</option>
-                </select>
+            <div class="form-row-2">
+                <div class="form-field">
+                    <label>Empresa</label>
+                    <select id="fEmpresa">
+                        <option value="RV4">RV4</option>
+                        <option value="CONSBA">CONSBA</option>
+                        <option value="Ambas">Ambas</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Rol</label>
+                    <select id="fRol">
+                        <option value="usuario">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="modal-actions">
@@ -430,24 +499,24 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const SUPABASE_URL    = 'https://iipgrojliqeyycvgnkrc.supabase.co';
-    const ANON_KEY        = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcGdyb2psaXFleXljdmdua3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzA1NzYsImV4cCI6MjA5MTM0NjU3Nn0.Y6FQ-1qWd7HPMvTnK4alpKxM-YLJ5CsKmkorAZKMJrg';
-    const SERVICE_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcGdyb2psaXFleXljdmdua3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTc3MDU3NiwiZXhwIjoyMDkxMzQ2NTc2fQ.Geew8Yzwj0FC41Tkc9fNGymOuwopf_DRXcoUuzr4ZLU';
+    const SUPABASE_URL = 'https://iipgrojliqeyycvgnkrc.supabase.co';
+    const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcGdyb2psaXFleXljdmdua3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzA1NzYsImV4cCI6MjA5MTM0NjU3Nn0.Y6FQ-1qWd7HPMvTnK4alpKxM-YLJ5CsKmkorAZKMJrg';
+    const SERVICE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcGdyb2psaXFleXljdmdua3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTc3MDU3NiwiZXhwIjoyMDkxMzQ2NTc2fQ.Geew8Yzwj0FC41Tkc9fNGymOuwopf_DRXcoUuzr4ZLU';
 
     const { createClient } = supabase;
     const client = createClient(SUPABASE_URL, ANON_KEY);
 
     let allUsers = [];
+    let currentFilter = 'todos';
     let deleteTargetId = null;
 
-    // ── AUTH CHECK ────────────────────────────────────────────────────────────
+    // ── AUTH CHECK ──────────────────────────────────────────────────────────
     client.auth.getSession().then(async ({ data: { session } }) => {
         if (!session) { window.location.href = 'login.html'; return; }
 
         const name = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
         document.getElementById('user-name').textContent = name;
 
-        // Verificar rol admin
         const { data: perfil } = await client
             .from('usuarios').select('rol').eq('id', session.user.id).single();
 
@@ -463,18 +532,15 @@
         client.auth.signOut().then(() => window.location.href = 'login.html');
     });
 
-    // ── LOAD USERS ────────────────────────────────────────────────────────────
+    // ── LOAD USERS ──────────────────────────────────────────────────────────
     async function loadUsers() {
         const { data, error } = await client
-            .from('usuarios')
-            .select('*')
-            .order('creado_en', { ascending: false });
+            .from('usuarios').select('*').order('creado_en', { ascending: false });
 
         if (error) { showToast('Error al cargar usuarios', 'error'); return; }
-
         allUsers = data || [];
         updateStats(allUsers);
-        renderTable(allUsers);
+        applyFilters();
     }
 
     function updateStats(users) {
@@ -488,10 +554,28 @@
         }
     }
 
+    function applyFilters() {
+        const q = (document.getElementById('searchInput').value || '').toLowerCase();
+        let filtered = allUsers;
+
+        if (currentFilter !== 'todos') {
+            filtered = filtered.filter(u => (u.empresa || '').toLowerCase() === currentFilter.toLowerCase());
+        }
+        if (q) {
+            filtered = filtered.filter(u =>
+                (u.nombre  || '').toLowerCase().includes(q) ||
+                (u.correo  || '').toLowerCase().includes(q) ||
+                (u.rol     || '').toLowerCase().includes(q) ||
+                (u.empresa || '').toLowerCase().includes(q)
+            );
+        }
+        renderTable(filtered);
+    }
+
     function renderTable(users) {
         const tbody = document.getElementById('usersBody');
         if (users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4">
+            tbody.innerHTML = `<tr><td colspan="5">
                 <div class="empty-state">
                     <div class="empty-icon">👥</div>
                     <div class="empty-text">No se encontraron usuarios</div>
@@ -499,12 +583,15 @@
             return;
         }
         tbody.innerHTML = users.map(u => {
-            const inicial = (u.nombre || u.correo)[0].toUpperCase();
-            const fecha   = u.creado_en
+            const inicial  = (u.nombre || u.correo)[0].toUpperCase();
+            const fecha    = u.creado_en
                 ? new Date(u.creado_en).toLocaleDateString('es', { day:'2-digit', month:'short', year:'numeric' })
                 : '—';
             const rolClass = u.rol === 'admin' ? 'role-admin' : 'role-usuario';
             const rolLabel = u.rol === 'admin' ? 'Admin' : 'Usuario';
+            const empresa  = u.empresa || '—';
+            const empClass = empresa === 'RV4' ? 'emp-rv4' : empresa === 'CONSBA' ? 'emp-consba' : 'emp-ambas';
+
             return `<tr>
                 <td>
                     <div class="user-cell">
@@ -515,6 +602,7 @@
                         </div>
                     </div>
                 </td>
+                <td><span class="empresa-badge ${empClass}">${empresa}</span></td>
                 <td><span class="role-badge ${rolClass}">${rolLabel}</span></td>
                 <td>${fecha}</td>
                 <td>
@@ -527,27 +615,29 @@
         }).join('');
     }
 
-    // ── SEARCH ────────────────────────────────────────────────────────────────
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const q = this.value.toLowerCase();
-        renderTable(allUsers.filter(u =>
-            (u.nombre || '').toLowerCase().includes(q) ||
-            (u.correo  || '').toLowerCase().includes(q) ||
-            (u.rol     || '').toLowerCase().includes(q)
-        ));
-    });
+    // ── FILTRO EMPRESA ──────────────────────────────────────────────────────
+    function filterEmpresa(btn, empresa) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = empresa;
+        applyFilters();
+    }
 
-    // ── MODAL ─────────────────────────────────────────────────────────────────
+    // ── SEARCH ──────────────────────────────────────────────────────────────
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    // ── MODAL ────────────────────────────────────────────────────────────────
     function openModal(editMode = false) {
         document.getElementById('modalTitle').textContent = editMode ? 'Editar usuario' : 'Agregar usuario';
         document.getElementById('passField').style.display = editMode ? 'none' : 'flex';
         document.getElementById('btnSave').textContent = editMode ? 'Guardar cambios' : 'Crear usuario';
         if (!editMode) {
-            document.getElementById('editId').value = '';
-            document.getElementById('fNombre').value = '';
-            document.getElementById('fCorreo').value = '';
-            document.getElementById('fPass').value   = '';
-            document.getElementById('fRol').value    = 'usuario';
+            document.getElementById('editId').value   = '';
+            document.getElementById('fNombre').value  = '';
+            document.getElementById('fCorreo').value  = '';
+            document.getElementById('fPass').value    = '';
+            document.getElementById('fRol').value     = 'usuario';
+            document.getElementById('fEmpresa').value = 'RV4';
         }
         document.getElementById('modalOverlay').classList.add('open');
     }
@@ -560,19 +650,21 @@
         const u = allUsers.find(x => x.id === id);
         if (!u) return;
         document.getElementById('editId').value   = u.id;
-        document.getElementById('fNombre').value  = u.nombre || '';
-        document.getElementById('fCorreo').value  = u.correo || '';
-        document.getElementById('fRol').value     = u.rol || 'usuario';
+        document.getElementById('fNombre').value  = u.nombre  || '';
+        document.getElementById('fCorreo').value  = u.correo  || '';
+        document.getElementById('fRol').value     = u.rol     || 'usuario';
+        document.getElementById('fEmpresa').value = u.empresa || 'RV4';
         openModal(true);
     }
 
-    // ── SAVE USER ─────────────────────────────────────────────────────────────
+    // ── SAVE USER ────────────────────────────────────────────────────────────
     async function saveUser() {
         const editId  = document.getElementById('editId').value;
         const nombre  = document.getElementById('fNombre').value.trim();
         const correo  = document.getElementById('fCorreo').value.trim();
         const pass    = document.getElementById('fPass').value;
         const rol     = document.getElementById('fRol').value;
+        const empresa = document.getElementById('fEmpresa').value;
         const btn     = document.getElementById('btnSave');
 
         if (!nombre || !correo) { showToast('Nombre y correo son requeridos', 'error'); return; }
@@ -583,15 +675,13 @@
 
         try {
             if (editId) {
-                // ── EDITAR ──
                 const { error } = await client
                     .from('usuarios')
-                    .update({ nombre, correo, rol })
+                    .update({ nombre, correo, rol, empresa })
                     .eq('id', editId);
                 if (error) throw error;
                 showToast('Usuario actualizado correctamente', 'success');
             } else {
-                // ── CREAR: Auth + tabla ──
                 const authRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
                     method: 'POST',
                     headers: {
@@ -609,7 +699,7 @@
                 if (!authRes.ok) throw new Error(authData.msg || authData.message || 'Error al crear usuario');
 
                 const { error } = await client.from('usuarios').insert({
-                    id: authData.id, nombre, correo, rol
+                    id: authData.id, nombre, correo, rol, empresa
                 });
                 if (error) throw error;
                 showToast('Usuario creado correctamente', 'success');
@@ -624,30 +714,23 @@
         }
     }
 
-    // ── DELETE ────────────────────────────────────────────────────────────────
+    // ── DELETE ───────────────────────────────────────────────────────────────
     function confirmDelete(id) {
         deleteTargetId = id;
         document.getElementById('confirmOverlay').classList.add('open');
         document.getElementById('confirmDelBtn').onclick = () => deleteUser(id);
     }
-
     function closeConfirm() {
         document.getElementById('confirmOverlay').classList.remove('open');
         deleteTargetId = null;
     }
-
     async function deleteUser(id) {
         closeConfirm();
         try {
-            // Eliminar de Auth
             await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${SERVICE_KEY}`,
-                    'apikey': SERVICE_KEY
-                }
+                headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY }
             });
-            // Eliminar de tabla
             await client.from('usuarios').delete().eq('id', id);
             showToast('Usuario eliminado', 'success');
             loadUsers();
@@ -656,7 +739,7 @@
         }
     }
 
-    // ── TOAST ─────────────────────────────────────────────────────────────────
+    // ── TOAST ────────────────────────────────────────────────────────────────
     function showToast(msg, type = 'success') {
         const t = document.getElementById('toast');
         t.textContent = (type === 'success' ? '✓  ' : '✕  ') + msg;
@@ -664,7 +747,6 @@
         setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // Cerrar modal al click fuera
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
