@@ -743,10 +743,13 @@
 
         btn.disabled = true; spinner.style.display = 'block'; btnText.textContent = 'Verificando...';
 
+        const t0 = performance.now();
         const { data: authData, error: authError } = await client.auth.signInWithPassword({ email, password });
+        const tAuth = performance.now() - t0;
 
         if (authError) {
             btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Iniciar sesión';
+            console.log(`[Login] Auth fallida en ${tAuth.toFixed(0)} ms — ${authError.message}`);
             const msgs = {
                 'Invalid login credentials': 'Correo o contraseña incorrectos.',
                 'Email not confirmed':        'Confirma tu correo electrónico primero.',
@@ -756,13 +759,17 @@
             return;
         }
 
+        const tDb0 = performance.now();
         const { data: usuario } = await client
             .from('usuarios').select('rol,estado').eq('id', authData.user.id).single();
+        const tDb = performance.now() - tDb0;
 
         if (usuario) {
-            showAlert('loginSuccess', '');
-            btnText.textContent = '✓ Acceso concedido';
-            setTimeout(() => window.location.href = 'index.html', 1200);
+            const tTotal = performance.now() - t0;
+            console.log(`[Login] Auth: ${tAuth.toFixed(0)} ms | DB: ${tDb.toFixed(0)} ms | Total: ${tTotal.toFixed(0)} ms`);
+            showAlert('loginSuccess', `Acceso correcto. Redirigiendo... (${tTotal.toFixed(0)} ms)`);
+            btnText.textContent = `✓ Acceso concedido (${tTotal.toFixed(0)} ms)`;
+            setTimeout(() => window.location.href = 'index.html', 2000);
             return;
         }
 
