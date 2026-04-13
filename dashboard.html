@@ -17,18 +17,8 @@
         const params = new URLSearchParams(window.location.search);
         const PROJECT_NAME = params.get('project') || 'RV4';
 
-        client.auth.getSession().then(async ({ data: { session } }) => {
-            if (!session) { window.location.href = 'login.html'; return; }
-            const name = session.user.user_metadata?.nombre || session.user.email.split('@')[0];
-            document.getElementById('user-name').textContent = name;
-            const { data } = await client
-                .from('usuarios')
-                .select('rol')
-                .eq('correo', session.user.email)
-                .single();
-            if (data?.rol === 'admin') {
-                document.getElementById('btn-admin').style.display = 'inline-flex';
-            }
+        client.auth.getSession().then(({ data: { session } }) => {
+            if (!session) { window.location.href = 'login.html'; }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -109,11 +99,15 @@
         }
         .topbar-left { display: flex; align-items: center; gap: 14px; }
         .home-link {
-            color: var(--gray); text-decoration: none; font-size: 0.73rem;
-            display: flex; align-items: center; gap: 5px;
-            transition: color .2s; font-weight: 500;
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 8px;
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--gray); text-decoration: none;
+            transition: background .18s, color .18s, border-color .18s;
+            flex-shrink: 0;
         }
-        .home-link:hover { color: var(--blue); }
+        .home-link:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .home-link svg { width: 16px; height: 16px; fill: currentColor; }
         .topbar-brand { font-size: 1rem; font-weight: 900; color: var(--navy); letter-spacing: 0.5px; }
         .topbar-brand span { color: var(--blue); }
         .topbar-sub { font-size: 0.68rem; color: var(--gray2); margin-top: 1px; }
@@ -296,7 +290,9 @@
     <!-- Topbar -->
     <div class="topbar">
         <div class="topbar-left">
-            <a href="index.html" class="home-link">← Proyectos</a>
+            <a href="index.html" class="home-link" title="Inicio">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </a>
             <div>
                 <div class="topbar-brand">Costos&<span>Presupuestos</span></div>
                 <div class="topbar-sub">Control Presupuestario de Obra</div>
@@ -307,11 +303,6 @@
             <select style="background:var(--bg);border:1px solid var(--border);color:var(--gray);padding:5px 10px;border-radius:7px;font-size:0.72rem;font-family:inherit;outline:none;">
                 <option>Periodo: 2026</option>
             </select>
-            <div class="user-chip">
-                <div class="user-avatar">G</div>
-                <span id="user-name">Usuario</span>
-            </div>
-            <a href="admin.html" class="btn-admin" id="btn-admin">⚙ Admin</a>
             <button class="btn-logout" id="btn-logout">Salir</button>
         </div>
     </div>
