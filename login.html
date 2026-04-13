@@ -327,7 +327,7 @@
 
 <!-- Skyline silhouette watermark -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMax meet"
-    style="position:fixed;bottom:0;left:0;width:100%;height:auto;z-index:0;opacity:0.07;pointer-events:none;">
+    style="position:fixed;bottom:0;left:0;width:100%;height:auto;z-index:0;opacity:0.20;pointer-events:none;">
     <!-- Torre izquierda alta -->
     <rect x="30"  y="120" width="60"  height="400"/>
     <rect x="45"  y="100" width="30"  height="30"/>
@@ -438,6 +438,15 @@
 </svg>
 
 <div class="page-wrap">
+    <!-- Gradient overlay: difuminado izquierda → derecha -->
+    <div style="position:fixed;inset:0;z-index:0;pointer-events:none;
+        background:linear-gradient(to right,
+            rgba(5,13,26,0.82) 0%,
+            rgba(5,13,26,0.60) 25%,
+            rgba(5,13,26,0.30) 50%,
+            rgba(5,13,26,0.08) 70%,
+            transparent 100%
+        );"></div>
 
     <!-- ── LEFT PANEL ── -->
     <div class="left-panel">
