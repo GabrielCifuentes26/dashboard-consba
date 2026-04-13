@@ -678,22 +678,22 @@
 
     // ── HERO SLIDER ──────────────────────────────────────────────────────────
     const KB = ['kb1','kb2','kb3','kb4'];
-    let slides = [], current = 0, timer = null;
+    const BASE = 'https://raw.githubusercontent.com/GabrielCifuentes26/rv4/master/imagenes%20de%20proyectos/';
+    let slides = [
+        BASE + 'image.webp',
+        BASE + 'image1.webp',
+        BASE + 'Captura%20de%20pantalla%202026-04-13%20123438.webp',
+        BASE + 'Captura%20de%20pantalla%202026-04-13%20123758.webp',
+        BASE + 'Captura%20de%20pantalla%202026-04-13%20124051.webp',
+        BASE + 'Captura%20de%20pantalla%202026-04-13%20124321.webp'
+    ];
+    let current = 0, timer = null;
 
-    async function initSlider() {
-        try {
-            const r = await fetch('https://api.github.com/repos/GabrielCifuentes26/rv4/contents/imagenes%20de%20proyectos');
-            const files = await r.json();
-            slides = files
-                .filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name))
-                .map(f => f.download_url);
-            if (!slides.length) return;
-            buildDots();
-            showSlide(0);
-            // Precargar las primeras 3 imágenes
-            slides.slice(0, 3).forEach(u => { const i = new Image(); i.src = u; });
-            timer = setInterval(() => showSlide((current + 1) % slides.length), 7000);
-        } catch(e) { console.warn('Slider:', e); }
+    function initSlider() {
+        buildDots();
+        showSlide(0);
+        slides.slice(0, 3).forEach(u => { const i = new Image(); i.src = u; });
+        timer = setInterval(() => showSlide((current + 1) % slides.length), 7000);
     }
 
     function buildDots() {
