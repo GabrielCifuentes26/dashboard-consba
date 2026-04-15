@@ -88,7 +88,7 @@
         .panel-heading {
             font-size:3.4rem; font-weight:900;
             line-height:1.04; margin-bottom:22px; letter-spacing:-2px;
-            background: linear-gradient(90deg, #fff 10%, #7dd3fc 30%, #fff 50%, #D4A832 70%, #fff 90%);
+            background: linear-gradient(90deg, #fff 10%, #D4A832 35%, #fff 60%, #D4A832 85%, #fff 100%);
             background-size: 200% auto;
             -webkit-background-clip: text; background-clip: text;
             color: transparent;
@@ -108,7 +108,7 @@
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 95%; height: auto;
+            width: 78%; height: auto;
             z-index: 0; pointer-events: none;
             opacity: 0.17;
         }
@@ -139,19 +139,19 @@
         }
         .fp-line {
             stroke-dasharray: var(--len); stroke-dashoffset: var(--len);
-            animation: draw 14s ease-in-out infinite;
+            animation: draw 18s ease-in-out infinite;
         }
         .fp-room {
             fill: rgba(201,168,76,0.08); stroke: none !important;
             fill-opacity: 0;
-            animation: roomAppear 14s ease-in-out infinite;
+            animation: roomAppear 18s ease-in-out infinite;
         }
         .fp-label {
             fill: rgba(255,255,255,0.9);
             font-size: 9px; font-family: 'Courier New', monospace;
             letter-spacing: 1.2px; font-weight: bold;
             opacity: 0;
-            animation: labelAppear 14s ease-in-out infinite;
+            animation: labelAppear 18s ease-in-out infinite;
         }
 
         /* Partículas flotantes */
