@@ -353,7 +353,7 @@
         </div>
         <div class="cover-meta-item">
             <div class="cover-meta-label">Versión</div>
-            <div class="cover-meta-value">1.0</div>
+            <div class="cover-meta-value">1.1</div>
         </div>
         <div class="cover-meta-item">
             <div class="cover-meta-label">Fecha</div>
@@ -378,6 +378,7 @@
             <li><div class="toc-num">7</div><span class="toc-text">Panel de administrador (admin.html)</span><span class="toc-dots"></span><span class="toc-page">Sección 7</span></li>
             <li><div class="toc-num">8</div><span class="toc-text">Credenciales y accesos importantes</span><span class="toc-dots"></span><span class="toc-page">Sección 8</span></li>
             <li><div class="toc-num">9</div><span class="toc-text">Resumen de todas las piezas</span><span class="toc-dots"></span><span class="toc-page">Sección 9</span></li>
+            <li><div class="toc-num">10</div><span class="toc-text">Diseño visual del login — plano, animaciones y responsive</span><span class="toc-dots"></span><span class="toc-page">Sección 10</span></li>
         </ul>
     </div>
 
@@ -970,10 +971,228 @@ tablero   login.html</pre>
         </div>
     </div>
 
+    <div class="divider"></div>
+
+    <!-- ── SECCIÓN 10 ── -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">10</div>
+            <div>
+                <div class="section-title">Diseño visual del login</div>
+                <div class="section-subtitle">Plano arquitectónico animado, animaciones y diseño responsive</div>
+            </div>
+        </div>
+
+        <p>La página <strong>login.html</strong> tiene un diseño visual elaborado construido completamente con CSS y SVG puro — sin imágenes externas. Cada elemento visual tiene su propósito de experiencia de usuario.</p>
+
+        <p><strong>Capa de fondo — Plano arquitectónico animado:</strong></p>
+
+        <div class="diagram">
+            <pre>
+  SVG fijo centrado en pantalla (clase .floor-plan)
+  ViewBox: 0 0 900 650 px  |  Opacidad: 0.17
+  ─────────────────────────────────────────────────
+
+  15 ambientes de una casa de un nivel:
+  ┌────────────────────────────────────────────────────────┐
+  │  Rec. Principal  │ Baño Ppal │  Rec. 2  │   Rec. 3   │
+  │    (280×240)     │ Vestidor  │ (220×160)│  (240×160) │
+  │                  │ (120×120) │          │            │
+  ├──────────────────┴───────────┴──────────┴────────────┤
+  │              C  O  R  R  E  D  O  R                  │
+  ├──────────────────────┬─────────────┬─────────────────┤
+  │   SALA (380×230)     │   COCINA    │    ESTUDIO      │
+  │                      │  COMEDOR    │   BAÑO VISITA   │
+  ├──────────────────────┴─────────────┴─────────────────┤
+  │    GARAJE 2 AUTOS (340×90)  │  TERRAZA (520×90)     │
+  └─────────────────────────────┴────────────────────────┘</pre>
+        </div>
+
+        <p>El plano se dibuja usando la técnica CSS <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">stroke-dasharray / stroke-dashoffset</code>. Cada línea, arco de puerta y mueble tiene una propiedad <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">--len</code> con su longitud exacta y un <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">animation-delay</code> escalonado:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fase de dibujo</th>
+                    <th>Elementos</th>
+                    <th>Rango de delay</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Paredes exteriores</td>
+                    <td>4 líneas del perímetro</td>
+                    <td>0s – 0.24s</td>
+                </tr>
+                <tr>
+                    <td>Paredes interiores</td>
+                    <td>12 divisiones de habitaciones</td>
+                    <td>0.32s – 1.09s</td>
+                </tr>
+                <tr>
+                    <td>Ventanas y puertas</td>
+                    <td>10 ventanas + 11 arcos de puerta</td>
+                    <td>1.16s – 2.56s</td>
+                </tr>
+                <tr>
+                    <td>Rellenos de habitaciones</td>
+                    <td>15 rectángulos dorados semitransparentes</td>
+                    <td>1.0s – 2.4s</td>
+                </tr>
+                <tr>
+                    <td>Etiquetas de texto</td>
+                    <td>15 nombres de ambientes</td>
+                    <td>2.3s – 3.7s</td>
+                </tr>
+                <tr>
+                    <td>Muebles completos</td>
+                    <td>~55 piezas (camas, sofás, mesas, autos, plantas…)</td>
+                    <td>2.70s – 6.48s</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box blue">
+            <div class="info-icon">⏱</div>
+            <div class="info-text"><strong>Ciclo de animación:</strong> 18 segundos por ciclo. Todo el plano termina de dibujarse en ~10.5s y luego se mantiene visible hasta que el ciclo se reinicia. La fórmula que garantiza que ningún elemento quede incompleto es: <code style="background:#dbeafe;padding:2px 6px;border-radius:4px">ciclo × (1 – fracción_dibujo) &gt; delay_máximo</code> → <code style="background:#dbeafe;padding:2px 6px;border-radius:4px">18 × 0.78 = 14.04s &gt; 6.48s ✓</code></div>
+        </div>
+
+        <p><strong>Capa de fondo — Blobs animados:</strong></p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-circle" style="background:linear-gradient(135deg,#0ea5e9,#3b82f6)">●</div>
+                <div class="step-body">
+                    <div class="step-title">Blob azul (superior izquierdo)</div>
+                    <div class="step-desc">Círculo difuminado con <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">filter: blur(80px)</code> que se mueve en loop con <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">@keyframes blobMove</code>.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle" style="background:linear-gradient(135deg,#f97316,#fb923c)">●</div>
+                <div class="step-body">
+                    <div class="step-title">Blob naranja (superior derecho)</div>
+                    <div class="step-desc">Mismo efecto con delay diferente — crea movimiento asimétrico y profundidad visual.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">●</div>
+                <div class="step-body">
+                    <div class="step-title">Blob púrpura (centro)</div>
+                    <div class="step-desc">Blob central más grande, da la sensación de espacio tridimensional.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle" style="background:linear-gradient(135deg,#22c55e,#16a34a)">●</div>
+                <div class="step-body">
+                    <div class="step-title">Blob verde + blob extra (inferiores)</div>
+                    <div class="step-desc">Completan la paleta del fondo oscuro (<code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">#050d1a</code>).</div>
+                </div>
+            </div>
+        </div>
+
+        <p><strong>Panel izquierdo — Encabezado animado:</strong></p>
+
+        <p>El texto <strong>"Costos &amp; Presupuestos"</strong> usa un gradiente de 5 paradas animado con <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">background-clip: text</code>:</p>
+
+        <div class="diagram">
+            <pre>
+  Dirección: 90deg (izquierda → derecha)
+  ──────────────────────────────────────────────────
+  Posición   Color           Significado
+  ────────   ─────────────   ───────────────────────
+    5%       #7dd3fc          Azul claro (sky-300)
+   25%       #ffffff          Blanco
+   50%       #D4A832          Dorado RV4
+   75%       #ffffff          Blanco
+   95%       #7dd3fc          Azul claro (sky-300)
+  ──────────────────────────────────────────────────
+  background-size: 200% auto
+  animation: textShine 6s linear infinite
+  "Presupuestos" usa el mismo gradiente en dirección reverse (5s)</pre>
+        </div>
+
+        <p><strong>Diseño responsive — 5 breakpoints:</strong></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Breakpoint</th>
+                    <th>Dispositivo destino</th>
+                    <th>Cambios principales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">≤ 1280px</code></td>
+                    <td>Laptop / monitor pequeño</td>
+                    <td>Panel izquierdo padding reducido, card 480px, heading 2.8rem</td>
+                </tr>
+                <tr>
+                    <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">≤ 1024px</code></td>
+                    <td>Tablet horizontal / laptop 13"</td>
+                    <td>Card 400px, heading 2.2rem, plano escala 90vw</td>
+                </tr>
+                <tr>
+                    <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">≤ 768px</code></td>
+                    <td>Tablet vertical / móvil grande</td>
+                    <td>Panel izquierdo oculto, card al 100% del ancho, plano opacidad 0.13</td>
+                </tr>
+                <tr>
+                    <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">≤ 480px</code></td>
+                    <td>Móvil estándar</td>
+                    <td>Padding reducido, border-radius 20px, heading 1.65rem, plano opacidad 0.10</td>
+                </tr>
+                <tr>
+                    <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">≤ 360px</code></td>
+                    <td>Móvil pequeño (mínimo)</td>
+                    <td>Card mínima con padding 24px/16px, botón fuente 0.86rem</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box green">
+            <div class="info-icon">📐</div>
+            <div class="info-text"><strong>Fórmula de escalado del plano:</strong> El SVG usa <code style="background:#dcfce7;padding:2px 6px;border-radius:4px">width: min(82vw, calc(84vh * 1.385))</code> donde 1.385 es el radio de aspecto 900÷650 del viewBox. Esto garantiza que el plano nunca desborde ni en ancho ni en alto, sin importar el tamaño de pantalla.</div>
+        </div>
+
+        <p><strong>Formulario — características de UX:</strong></p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-circle">①</div>
+                <div class="step-body">
+                    <div class="step-title">Floating labels</div>
+                    <div class="step-desc">Las etiquetas de los campos suben con transición CSS al escribir. También detectan autofill del navegador vía <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">animationstart</code>.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle">②</div>
+                <div class="step-body">
+                    <div class="step-title">Indicador de fuerza de contraseña</div>
+                    <div class="step-desc">4 barras de colores (rojo → naranja → verde) que evalúan longitud, mayúsculas, números y símbolos en tiempo real.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle">③</div>
+                <div class="step-body">
+                    <div class="step-title">Ojo toggle en contraseña</div>
+                    <div class="step-desc">Botón que alterna entre <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">type="password"</code> y <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">type="text"</code> para ver/ocultar la contraseña.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-circle">④</div>
+                <div class="step-body">
+                    <div class="step-title">Botón shimmer</div>
+                    <div class="step-desc">Destello blanco que recorre el botón de submit en loop usando <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">@keyframes shimmer</code>.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <div class="footer">
         <div class="footer-brand">Costos&<span>Presupuestos</span></div>
-        <div class="footer-note">Manual Técnico v1.0 — Abril 2026 — Generado con Claude Code</div>
+        <div class="footer-note">Manual Técnico v1.1 — Abril 2026 — Generado con Claude Code</div>
     </div>
 
 </div>
