@@ -105,6 +105,8 @@
         .board-row { border-bottom:1px solid #f1f5f9; transition:background .12s; }
         .board-row:hover { background:#fafbff; }
         .board-row:last-child { border-bottom:none; }
+        .board-row.row-done { background:linear-gradient(90deg,rgba(34,197,94,0.04) 0%,transparent 40%); }
+        .board-row.row-done:hover { background:linear-gradient(90deg,rgba(34,197,94,0.08) 0%,#fafbff 40%); }
 
         /* SOC CELL */
         .td-soc { padding:0; border-right:1.5px solid #f1f5f9; vertical-align:middle; }
@@ -151,6 +153,42 @@
         .cc-empty-ico { font-size:3.2rem; margin-bottom:14px; }
         .cc-empty-ttl { font-size:1.08rem; font-weight:800; color:#152540; margin-bottom:7px; }
         .cc-empty-sub { font-size:0.84rem; color:#94a3b8; }
+
+        /* ── PROGRESS STRIP ── */
+        .progress-strip { background:#fff; border-radius:18px; border:1.5px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.05); padding:24px 32px; margin-bottom:20px; display:none; align-items:center; gap:36px; }
+        .prog-fraction { flex-shrink:0; text-align:center; }
+        .prog-number { font-size:2.8rem; font-weight:900; color:#152540; line-height:1; }
+        .prog-number span { font-size:1.6rem; font-weight:600; color:#94a3b8; }
+        .prog-lbl { font-size:0.63rem; font-weight:800; text-transform:uppercase; letter-spacing:0.9px; color:#94a3b8; margin-top:5px; line-height:1.4; }
+        .prog-divider { width:1.5px; height:60px; background:#f1f5f9; flex-shrink:0; }
+        .prog-right { flex:1; min-width:0; }
+        .prog-track { display:flex; gap:5px; margin-bottom:9px; }
+        .prog-seg { flex:1; height:12px; border-radius:8px; transition:transform .2s,opacity .2s; cursor:default; position:relative; }
+        .prog-seg:first-child { border-radius:8px 4px 4px 8px; }
+        .prog-seg:last-child  { border-radius:4px 8px 8px 4px; }
+        .prog-seg:hover { transform:scaleY(1.5); opacity:0.85; }
+        .prog-seg.done { background:linear-gradient(90deg,#22c55e,#16a34a); }
+        .prog-seg.proc { background:linear-gradient(90deg,#fbbf24,#f59e0b); }
+        .prog-seg.late { background:linear-gradient(90deg,#f87171,#ef4444); }
+        .prog-seg.pend { background:#e2e8f0; }
+        .prog-names { display:flex; gap:5px; }
+        .prog-name { flex:1; font-size:0.58rem; font-weight:800; color:#94a3b8; text-align:center; text-transform:uppercase; letter-spacing:0.4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; }
+        .prog-legend { display:flex; align-items:center; gap:16px; margin-top:12px; padding-top:12px; border-top:1px solid #f1f5f9; }
+        .prog-legend-item { display:flex; align-items:center; gap:5px; font-size:0.65rem; font-weight:700; color:#94a3b8; }
+        .prog-legend-dot { width:8px; height:8px; border-radius:50%; }
+
+        /* ── MINI TIMELINE (en fila de sociedad) ── */
+        .soc-mini { margin-top:7px; display:flex; align-items:center; gap:7px; }
+        .mini-track { display:flex; gap:3px; }
+        .mini-seg { width:20px; height:7px; border-radius:4px; transition:transform .15s; }
+        .mini-seg:first-child { border-radius:4px 2px 2px 4px; }
+        .mini-seg:last-child  { border-radius:2px 4px 4px 2px; }
+        .mini-seg.done { background:#22c55e; }
+        .mini-seg.proc { background:#f59e0b; }
+        .mini-seg.late { background:#ef4444; }
+        .mini-seg.pend { background:#e2e8f0; }
+        .mini-count { font-size:0.67rem; font-weight:800; color:#94a3b8; white-space:nowrap; }
+        .mini-count.all-done { color:#16a34a; }
 
         /* BTN CC */
         .btn-cc { display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:10px; font-size:0.84rem; font-weight:700; font-family:inherit; cursor:pointer; border:none; transition:all .18s; white-space:nowrap; }
@@ -315,6 +353,25 @@
         </div>
         <div class="kpi-value" id="kpiLate">—</div>
         <div class="kpi-sub">próximos 7 días</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS STRIP -->
+    <div class="progress-strip" id="progressStrip">
+      <div class="prog-fraction">
+        <div class="prog-number" id="progNum">0<span id="progTotal">/0</span></div>
+        <div class="prog-lbl">Sociedades<br>Completadas</div>
+      </div>
+      <div class="prog-divider"></div>
+      <div class="prog-right">
+        <div class="prog-track" id="progTrack"></div>
+        <div class="prog-names" id="progNames"></div>
+        <div class="prog-legend">
+          <span class="prog-legend-item"><span class="prog-legend-dot" style="background:#22c55e"></span>Completo</span>
+          <span class="prog-legend-item"><span class="prog-legend-dot" style="background:#f59e0b"></span>En Proceso</span>
+          <span class="prog-legend-item"><span class="prog-legend-dot" style="background:#ef4444"></span>Fuera de Tiempo</span>
+          <span class="prog-legend-item"><span class="prog-legend-dot" style="background:#e2e8f0"></span>Pendiente</span>
+        </div>
       </div>
     </div>
 
@@ -587,6 +644,7 @@
         const { data:cierres } = await client.from('cc_cierres').select('*').in('sociedad_id', socs.map(s=>s.id)).order('etapa_num');
         const all = cierres || [];
         updateKpis(socs, all);
+        renderProgressStrip(socs, all);
         document.getElementById('boardCount').textContent = `${socs.length} sociedad${socs.length===1?'':'es'}`;
         tbody.innerHTML = '';
         socs.forEach(soc => tbody.insertAdjacentHTML('beforeend', renderRow(soc, all.filter(c => c.sociedad_id === soc.id))));
@@ -608,8 +666,39 @@
         document.getElementById('kpiLate').textContent    = venc;
     }
 
+    function renderProgressStrip(socs, allCierres) {
+        const strip = document.getElementById('progressStrip');
+        if (!socs || socs.length === 0) { strip.style.display = 'none'; return; }
+        strip.style.display = 'flex';
+
+        let completed = 0;
+        const socData = socs.map(soc => {
+            const cs  = allCierres.filter(c => c.sociedad_id === soc.id);
+            const dot = getSociedadDot(cs);
+            let st;
+            if (dot === '#22c55e') { st = 'done'; completed++; }
+            else if (dot === '#ef4444') st = 'late';
+            else if (dot === '#f59e0b') st = 'proc';
+            else st = 'pend';
+            return { nombre: soc.nombre, st };
+        });
+
+        document.getElementById('progNum').innerHTML   = `${completed}<span>/${socs.length}</span>`;
+        document.getElementById('progTrack').innerHTML = socData.map(s => `<div class="prog-seg ${s.st}" title="${s.nombre}"></div>`).join('');
+        document.getElementById('progNames').innerHTML = socData.map(s => `<div class="prog-name">${s.nombre}</div>`).join('');
+    }
+
     function renderRow(soc, cierres) {
         const dot = getSociedadDot(cierres);
+
+        // Mini timeline: 4 segmentos coloreados por estatus
+        const miniSegs = [1,2,3,4].map(n => {
+            const st = getEtapaStatus(cierres.find(x => x.etapa_num===n)||null);
+            return `<div class="mini-seg ${st}"></div>`;
+        }).join('');
+        const doneCount = [1,2,3,4].filter(n => getEtapaStatus(cierres.find(x=>x.etapa_num===n)||null)==='done').length;
+        const allDone   = doneCount === 4;
+
         const cells = [1,2,3,4].map(n => {
             const c  = cierres.find(x => x.etapa_num===n) || null;
             const st = getEtapaStatus(c);
@@ -623,11 +712,27 @@
                 </div>
             </td>`;
         }).join('');
+
         const act = isAdmin
             ? `<button class="btn-row-edit" title="Editar" onclick="openDetalle(${soc.id},event)">✏️</button>`
             : `<span style="color:#94a3b8;font-size:1.2rem;cursor:default">→</span>`;
-        return `<tr class="board-row">
-            <td class="td-soc"><div class="soc-inner"><div class="soc-dot" style="background:${dot}"></div><span class="soc-name">${soc.nombre}</span></div></td>
+
+        return `<tr class="board-row${allDone?' row-done':''}">
+            <td class="td-soc">
+                <div class="soc-inner">
+                    <div>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div class="soc-dot" style="background:${dot}"></div>
+                            <span class="soc-name">${soc.nombre}</span>
+                            ${allDone ? '<span style="font-size:0.65rem;font-weight:800;color:#16a34a;background:#dcfce7;padding:2px 8px;border-radius:20px;margin-left:2px">✓ Completo</span>' : ''}
+                        </div>
+                        <div class="soc-mini">
+                            <div class="mini-track">${miniSegs}</div>
+                            <span class="mini-count${allDone?' all-done':''}">${doneCount}/4 tareas</span>
+                        </div>
+                    </div>
+                </div>
+            </td>
             ${cells}
             <td class="td-act">${act}</td>
         </tr>`;
